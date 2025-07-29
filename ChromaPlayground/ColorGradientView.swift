@@ -5,7 +5,7 @@
 
 import AppKit
 
-class ColorPickerView : NSView {
+class ColorGradientView : NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         let gradients = [
@@ -31,20 +31,20 @@ class ColorPickerView : NSView {
 
 #if DEBUG
 import SwiftUI
-struct ColorPickerView_Preview : View, NSViewRepresentable {
-    typealias NSViewType = ColorPickerView
+struct ColorGradientView_Preview : View, NSViewRepresentable {
+    typealias NSViewType = ColorGradientView
 
-    func makeNSView(context: Context) -> ColorPickerView {
-        return ColorPickerView()
+    func makeNSView(context: Context) -> NSViewType {
+        return NSViewType()
     }
     
-    func updateNSView(_ nsView: ColorPickerView, context: Context) {
+    func updateNSView(_ nsView: NSViewType, context: Context) {
     }
 }
 
 #Preview {
     ZStack {
-        ColorPickerView_Preview()
+        ColorGradientView_Preview()
     }.frame(width: 480, height: 560)
 }
 #endif
