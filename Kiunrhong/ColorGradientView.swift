@@ -1,6 +1,6 @@
 //
 //  ColorPickerView.swift
-//  ChromaPlayground
+//  Kiunrhong
 //
 
 import AppKit
@@ -37,7 +37,7 @@ struct ColorGradientView_Preview : View, NSViewRepresentable {
     func makeNSView(context: Context) -> NSViewType {
         return NSViewType()
     }
-    
+
     func updateNSView(_ nsView: NSViewType, context: Context) {
     }
 }

@@ -1,6 +1,6 @@
 //
 //  ColorPickerView.swift
-//  ChromaPlayground
+//  Kiunrhong
 //
 //
 

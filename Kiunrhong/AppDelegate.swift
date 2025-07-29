@@ -1,8 +1,7 @@
 //
 //  AppDelegate.swift
-//  ChromaPlayground
+//  Kiunrhong
 //
-//  Created by 姜柏任 on 2025/7/29.
 //
 
 import Cocoa
@@ -36,4 +35,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         app.run()
     }
 }
-

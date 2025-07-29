@@ -1,6 +1,6 @@
 //
 //  Shaders.metal
-//  ChromaPlayground
+//  Kiunrhong
 //
 //
 

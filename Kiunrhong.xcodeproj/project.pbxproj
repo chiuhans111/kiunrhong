@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		2B09548D2E385F3900854176 /* ChromaPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChromaPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B09548D2E385F3900854176 /* Kiunrhong.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kiunrhong.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2B09548F2E385F3900854176 /* ChromaPlayground */ = {
+		2B09548F2E385F3900854176 /* Kiunrhong */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ChromaPlayground;
+			path = Kiunrhong;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		2B0954842E385F3900854176 = {
 			isa = PBXGroup;
 			children = (
-				2B09548F2E385F3900854176 /* ChromaPlayground */,
+				2B09548F2E385F3900854176 /* Kiunrhong */,
 				2B09548E2E385F3900854176 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		2B09548E2E385F3900854176 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2B09548D2E385F3900854176 /* ChromaPlayground.app */,
+				2B09548D2E385F3900854176 /* Kiunrhong.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2B09548C2E385F3900854176 /* ChromaPlayground */ = {
+		2B09548C2E385F3900854176 /* Kiunrhong */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B09549A2E385F3A00854176 /* Build configuration list for PBXNativeTarget "ChromaPlayground" */;
+			buildConfigurationList = 2B09549A2E385F3A00854176 /* Build configuration list for PBXNativeTarget "Kiunrhong" */;
 			buildPhases = (
 				2B0954892E385F3900854176 /* Sources */,
 				2B09548A2E385F3900854176 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				2B09548F2E385F3900854176 /* ChromaPlayground */,
+				2B09548F2E385F3900854176 /* Kiunrhong */,
 			);
-			name = ChromaPlayground;
+			name = Kiunrhong;
 			packageProductDependencies = (
 			);
-			productName = ChromaPlayground;
-			productReference = 2B09548D2E385F3900854176 /* ChromaPlayground.app */;
+			productName = Kiunrhong;
+			productReference = 2B09548D2E385F3900854176 /* Kiunrhong.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2B0954882E385F3900854176 /* Build configuration list for PBXProject "ChromaPlayground" */;
+			buildConfigurationList = 2B0954882E385F3900854176 /* Build configuration list for PBXProject "Kiunrhong" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2B09548C2E385F3900854176 /* ChromaPlayground */,
+				2B09548C2E385F3900854176 /* Kiunrhong */,
 			);
 		};
 /* End PBXProject section */
@@ -250,20 +250,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ChromaPlayground/ChromaPlayground.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Kiunrhong/Kiunrhong.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Poren Chiang 2025. Free software released under GNU GPL 3.0 License.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = tw.poren.ChromaPlayground;
+				PRODUCT_BUNDLE_IDENTIFIER = tw.poren.kiunrhong;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -275,20 +274,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ChromaPlayground/ChromaPlayground.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Kiunrhong/Kiunrhong.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Poren Chiang 2025. Free software released under GNU GPL 3.0 License.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = tw.poren.ChromaPlayground;
+				PRODUCT_BUNDLE_IDENTIFIER = tw.poren.kiunrhong;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -298,7 +296,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2B0954882E385F3900854176 /* Build configuration list for PBXProject "ChromaPlayground" */ = {
+		2B0954882E385F3900854176 /* Build configuration list for PBXProject "Kiunrhong" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B0954982E385F3A00854176 /* Debug */,
@@ -307,7 +305,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B09549A2E385F3A00854176 /* Build configuration list for PBXNativeTarget "ChromaPlayground" */ = {
+		2B09549A2E385F3A00854176 /* Build configuration list for PBXNativeTarget "Kiunrhong" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B09549B2E385F3A00854176 /* Debug */,

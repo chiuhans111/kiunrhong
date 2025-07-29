@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2B09548C2E385F3900854176"
-               BuildableName = "ChromaPlayground.app"
-               BlueprintName = "ChromaPlayground"
-               ReferencedContainer = "container:ChromaPlayground.xcodeproj">
+               BuildableName = "Kiunrhong.app"
+               BlueprintName = "Kiunrhong"
+               ReferencedContainer = "container:Kiunrhong.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2B09548C2E385F3900854176"
-            BuildableName = "ChromaPlayground.app"
-            BlueprintName = "ChromaPlayground"
-            ReferencedContainer = "container:ChromaPlayground.xcodeproj">
+            BuildableName = "Kiunrhong.app"
+            BlueprintName = "Kiunrhong"
+            ReferencedContainer = "container:Kiunrhong.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <EnvironmentVariables>
@@ -74,9 +74,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2B09548C2E385F3900854176"
-            BuildableName = "ChromaPlayground.app"
-            BlueprintName = "ChromaPlayground"
-            ReferencedContainer = "container:ChromaPlayground.xcodeproj">
+            BuildableName = "Kiunrhong.app"
+            BlueprintName = "Kiunrhong"
+            ReferencedContainer = "container:Kiunrhong.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

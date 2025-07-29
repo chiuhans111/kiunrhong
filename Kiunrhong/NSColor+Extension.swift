@@ -1,6 +1,6 @@
 //
 //  NSColor+Extension.swift
-//  ChromaPlayground
+//  Kiunrhong
 //
 //
 

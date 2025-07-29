@@ -1,6 +1,6 @@
 //
 //  Colors.metal
-//  ChromaPlayground
+//  Kiunrhong
 //
 //
 
