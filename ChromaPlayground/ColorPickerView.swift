@@ -5,37 +5,118 @@
 //
 
 import AppKit
+import MetalKit
 
 class ColorPickerView : NSView {
 
     let colorSpace = CGColorSpace(name: CGColorSpace.displayP3)!
+
     let lightness = 0.7, chroma = 0.168 // at the P3 edge when h=268
     // at c = 0.16, two suitable P3 edges (l, h) have been determined to be usable for the color ring: (0.6784, 88.41) and (0.715, 268)
     // for Rec2020, consider using (0.6638, 88.41)
 
-    override func draw(_ dirtyRect: NSRect) {
-        let bound = self.bounds.insetBy(dx: 32, dy: 32)
-        let middle = NSPoint(x: bound.midX, y: bound.midY)
+    var metalView: MTKView!
+    var device: MTLDevice!
+    var renderer: Renderer!
 
-        let callback: CGFunctionEvaluateCallback = { info, inData, outData in
-            let percentage = inData[0]
-            let oklch: Vector3 = (l: 0.7, c: 0.168, h: 360.0 * percentage)
-            let p3 = xyzToP3(oklchToXYZ(oklch))
-            outData[0] = p3.0
-            outData[1] = p3.1
-            outData[2] = p3.2
-            outData[3] = 1
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        self.translatesAutoresizingMaskIntoConstraints = false
+
+        self.metalView = MTKView()
+        metalView.translatesAutoresizingMaskIntoConstraints = false
+        metalView.widthAnchor.constraint(equalTo: metalView.heightAnchor).isActive = true
+        self.addSubview(metalView)
+        metalView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor).isActive = true
+        metalView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+        metalView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+
+        metalView.colorPixelFormat = .rgba16Float
+        metalView.colorspace = NSColorSpace.displayP3.cgColorSpace
+        metalView.clearColor = MTLClearColor(nsColor: NSColor.windowBackgroundColor)
+        //metalView.isPaused = true
+        //metalView.enableSetNeedsDisplay = true
+
+        self.device = MTLCreateSystemDefaultDevice()
+        metalView.device = self.device
+
+        self.renderer = Renderer(metalView: metalView)
+        metalView.delegate = renderer
+        metalView.needsDisplay = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    class Renderer : NSObject, MTKViewDelegate {
+
+        weak var metalView: MTKView?
+        var commandQueue: MTLCommandQueue!
+        var pipelineState: MTLRenderPipelineState!
+        var vertexBuffer: MTLBuffer!
+
+        init(metalView: MTKView) {
+            self.metalView = metalView
+
+            let device = metalView.device!
+            self.commandQueue = device.makeCommandQueue()
+
+            // Load library
+            let library = device.makeDefaultLibrary()!
+            let vertexFunction = library.makeFunction(name: "vertexShader")!
+            let fragmentFunction = library.makeFunction(name: "fragmentShader")!
+
+            // Set up pipeline
+            let descriptor = MTLRenderPipelineDescriptor()
+            descriptor.vertexFunction = vertexFunction
+            descriptor.fragmentFunction = fragmentFunction
+            descriptor.colorAttachments[0].pixelFormat = .rgba16Float
+            self.pipelineState = try! device.makeRenderPipelineState(descriptor: descriptor)
+
+            // Set up buffer
+            let vertices : [simd_float4] = [
+                [0.0, 1.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [1.0, 1.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0, 0.0],
+            ]
+
+            let buffer = device.makeBuffer(bytes: vertices, length: MemoryLayout<simd_float4>.stride * vertices.count)
+            self.vertexBuffer = buffer
         }
 
-        let domain: [CGFloat] = [0, 1]
-        let range: [CGFloat] = [0, 1, 0, 1, 0, 1, 0, 1]
-        var callbacks = CGFunctionCallbacks(version: 0, evaluate: callback, releaseInfo: nil)
-        let function = CGFunction(info: nil, domainDimension: domain.count / 2, domain: domain, rangeDimension: range.count / 2, range: range, callbacks: &callbacks)!
+        /// Calls when resized.
+        func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        }
 
-        let shading = CGShading(axialSpace: colorSpace, start: .init(x: bound.minX, y: bound.minY), end: .init(x: bound.maxX, y: bound.maxY), function: function, extendStart: true, extendEnd: true)!
+        func draw(in view: MTKView) {
+            guard let descriptor = view.currentRenderPassDescriptor else { return }
 
-        let context = NSGraphicsContext.current!.cgContext
-        context.drawShading(shading)
+            let buffer = commandQueue.makeCommandBuffer()!
+            let encoder = buffer.makeRenderCommandEncoder(descriptor: descriptor)!
+
+            let size = view.drawableSize
+            encoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: size.width, height: size.height, znear: 0.0, zfar: 1.0))
+            encoder.setRenderPipelineState(self.pipelineState)
+
+            encoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
+            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+            encoder.endEncoding()
+
+            let drawable = view.currentDrawable!
+            buffer.present(drawable)
+            buffer.commit()
+        }
+    }
+}
+
+extension MTLClearColor {
+    init(nsColor: NSColor) {
+        let color = nsColor.usingColorSpace(NSColorSpace.displayP3)!
+        self.init(red: color.redComponent, green: color.greenComponent, blue: color.blueComponent, alpha: color.alphaComponent)
     }
 }
 
