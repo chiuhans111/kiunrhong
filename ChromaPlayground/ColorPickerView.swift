@@ -56,6 +56,7 @@ class ColorPickerView : NSView {
         var commandQueue: MTLCommandQueue!
         var pipelineState: MTLRenderPipelineState!
         var vertexBuffer: MTLBuffer!
+        var fragmentBuffer: MTLBuffer!
 
         init(metalView: MTKView) {
             self.metalView = metalView
@@ -73,6 +74,7 @@ class ColorPickerView : NSView {
             descriptor.vertexFunction = vertexFunction
             descriptor.fragmentFunction = fragmentFunction
             descriptor.colorAttachments[0].pixelFormat = .rgba16Float
+            descriptor.isRasterizationEnabled = true
             self.pipelineState = try! device.makeRenderPipelineState(descriptor: descriptor)
 
             // Set up buffer
@@ -84,9 +86,8 @@ class ColorPickerView : NSView {
                 [1.0, 1.0, 0.0, 1.0],
                 [1.0, -1.0, 0.0, 1.0],
             ]
-
-            let buffer = device.makeBuffer(bytes: vertices, length: MemoryLayout<simd_float4>.stride * vertices.count)
-            self.vertexBuffer = buffer
+            self.vertexBuffer = device.makeBuffer(bytes: vertices, length: MemoryLayout<simd_float4>.stride * vertices.count)
+            self.fragmentBuffer = device.makeBuffer(length: MemoryLayout<Context>.stride, options: .storageModeShared)
         }
 
         /// Calls when resized.
@@ -98,15 +99,29 @@ class ColorPickerView : NSView {
 
             let buffer = commandQueue.makeCommandBuffer()!
             let encoder = buffer.makeRenderCommandEncoder(descriptor: descriptor)!
-
             encoder.setRenderPipelineState(self.pipelineState)
             encoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
-            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+
+            var context = Context(size: view.drawableSize)
+            memcpy(self.fragmentBuffer.contents(), &context, MemoryLayout<Context>.stride)
+            encoder.setFragmentBuffer(fragmentBuffer, offset: 0, index: 0)
+
+            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6, instanceCount: 1)
             encoder.endEncoding()
 
             let drawable = view.currentDrawable!
             buffer.present(drawable)
             buffer.commit()
+        }
+
+        struct Context {
+            var origin: simd_packed_float2
+            var size: simd_packed_float2
+
+            init(size: CGSize) {
+                self.origin = simd_packed_float2(Float(size.width / 2.0), Float(size.height / 2.0))
+                self.size = simd_packed_float2(Float(size.width), Float(size.height))
+            }
         }
     }
 }
