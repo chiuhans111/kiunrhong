@@ -8,7 +8,7 @@
 using namespace metal;
 
 typedef float4 coord_t;
-typedef float4 color_t;
+typedef half4 color_t;
 
 struct vertex_t {
     coord_t position [[position]];
@@ -19,5 +19,5 @@ vertex vertex_t vertexShader(constant vertex_t *vertices [[buffer(0)]], uint i [
 }
 
 fragment color_t fragmentShader(vertex_t vert [[stage_in]]) {
-    return color_t(0.5, 0.6, 0.7, 1.0);
+    return color_t(0.5 + 0.5 * vert.position[0], 0.5 + 0.5 * vert.position[1], 0.5 + 0.5 * vert.position[2], 1.0);
 }

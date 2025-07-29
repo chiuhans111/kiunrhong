@@ -27,15 +27,16 @@ class ColorPickerView : NSView {
         metalView.translatesAutoresizingMaskIntoConstraints = false
         metalView.widthAnchor.constraint(equalTo: metalView.heightAnchor).isActive = true
         self.addSubview(metalView)
-        metalView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor).isActive = true
-        metalView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+        metalView.widthAnchor.constraint(lessThanOrEqualTo: self.layoutMarginsGuide.widthAnchor).isActive = true
+        metalView.heightAnchor.constraint(lessThanOrEqualTo: self.layoutMarginsGuide.heightAnchor, multiplier: 1).isActive = true
+        metalView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         metalView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
 
         metalView.colorPixelFormat = .rgba16Float
         metalView.colorspace = NSColorSpace.displayP3.cgColorSpace
         metalView.clearColor = MTLClearColor(nsColor: NSColor.windowBackgroundColor)
-        //metalView.isPaused = true
-        //metalView.enableSetNeedsDisplay = true
+        metalView.isPaused = true
+        metalView.enableSetNeedsDisplay = true
 
         self.device = MTLCreateSystemDefaultDevice()
         metalView.device = self.device
@@ -76,12 +77,12 @@ class ColorPickerView : NSView {
 
             // Set up buffer
             let vertices : [simd_float4] = [
-                [0.0, 1.0, 0.0, 0.0],
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 0.0],
-                [1.0, 1.0, 0.0, 0.0],
-                [1.0, 0.0, 0.0, 0.0],
+                [-1.0, 1.0, 0.0, 1.0],
+                [1.0, -1.0, 0.0, 1.0],
+                [-1.0, -1.0, 0.0, 1.0],
+                [-1.0, 1.0, 0.0, 1.0],
+                [1.0, 1.0, 0.0, 1.0],
+                [1.0, -1.0, 0.0, 1.0],
             ]
 
             let buffer = device.makeBuffer(bytes: vertices, length: MemoryLayout<simd_float4>.stride * vertices.count)
@@ -98,10 +99,7 @@ class ColorPickerView : NSView {
             let buffer = commandQueue.makeCommandBuffer()!
             let encoder = buffer.makeRenderCommandEncoder(descriptor: descriptor)!
 
-            let size = view.drawableSize
-            encoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: size.width, height: size.height, znear: 0.0, zfar: 1.0))
             encoder.setRenderPipelineState(self.pipelineState)
-
             encoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
             encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
             encoder.endEncoding()
