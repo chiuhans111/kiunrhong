@@ -33,6 +33,8 @@ class ColorPickerView : NSView {
 
         self.infoTextField = NSTextField(labelWithString: "-")
         infoTextField.translatesAutoresizingMaskIntoConstraints = false
+        infoTextField.font = createTabularLabelFont()
+
         self.addSubview(infoTextField)
 
         infoTextField.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
@@ -41,6 +43,15 @@ class ColorPickerView : NSView {
 
     required init(coder: NSCoder) {
         fatalError( "init(coder:) has not been implemented" )
+    }
+
+    private func createTabularLabelFont() -> NSFont {
+        let systemFont = NSFont.labelFont(ofSize: NSFont.labelFontSize)
+        let descriptor = NSFontDescriptor(fontAttributes: [
+            .family: systemFont.familyName!,
+            .featureSettings: [kNumberSpacingType: kMonospacedNumbersSelector]
+        ])
+        return NSFont(descriptor: descriptor, size: systemFont.pointSize)!
     }
 
     override func updateTrackingAreas() {
@@ -78,9 +89,8 @@ class ColorPickerView : NSView {
         let c = spectrumView.chroma
         let h = (angleInDegrees + 360.0).truncatingRemainder(dividingBy: 360.0)
 
-        infoTextField.stringValue = String(format: "L: \t%.4f\nC: \t%.4f\nH: \t%.4f", l, c, h)
+        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.4f", l, c, h)
     }
-
 
     override func mouseExited(with event: NSEvent) {
         infoTextField.stringValue = ""

@@ -80,9 +80,11 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
     struct FragmentContext {
         var drawableSize: simd_packed_float2
+        var colorParams: simd_packed_half4
 
-        init(size: CGSize) {
+        init(size: CGSize, colorParams: (CGFloat, CGFloat, CGFloat, CGFloat)) {
             self.drawableSize = simd_packed_float2(Float(size.width), Float(size.height))
+            self.colorParams = simd_packed_half4(Float16(colorParams.0), Float16(colorParams.1), Float16(colorParams.2), Float16(colorParams.3))
         }
     }
 
@@ -113,7 +115,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         // Set up buffers
         encoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
 
-        var context = FragmentContext(size: self.drawableSize)
+        var context = FragmentContext(size: self.drawableSize, colorParams: (lightness, chroma, 0.0, 0.0))
         updateFragmentBuffer(&context)
         encoder.setFragmentBuffer(self.fragmentBuffer, offset: 0, index: 0)
 
