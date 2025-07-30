@@ -3,6 +3,8 @@ Kiunrhong
 
 Experimental color picker and utilities.
 
+<img src="docs/screenshot.png" alt="Screenshot" height="395" />
+
 Naming
 ------
 
