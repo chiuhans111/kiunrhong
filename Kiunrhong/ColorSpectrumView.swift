@@ -15,6 +15,9 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     private var vertexBuffer: MTLBuffer!
     private var fragmentBuffer: MTLBuffer!
 
+    var lightness = 0.6
+    var chroma = 0.168
+
     init(frame frameRect: NSRect) {
         let device = MTLCreateSystemDefaultDevice()!
         super.init(frame: frameRect, device: device)

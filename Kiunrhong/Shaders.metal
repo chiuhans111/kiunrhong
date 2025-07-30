@@ -21,6 +21,9 @@ struct vertex_t {
 struct shader_context {
     /// The size of the currently rendering drawable.
     bound_t drawable_size;
+
+    /// The color parameters used to draw the spectrum.
+    color_t color_values;
 };
 
 vertex vertex_t vertexShader(constant vertex_t *vertices [[buffer(0)]], uint i [[vertex_id]]) {
