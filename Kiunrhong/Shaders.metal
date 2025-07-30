@@ -21,9 +21,6 @@ struct vertex_t {
 struct shader_context {
     /// The size of the currently rendering drawable.
     bound_t drawable_size;
-
-    /// The set background color.
-    color_t clear_color;
 };
 
 vertex vertex_t vertexShader(constant vertex_t *vertices [[buffer(0)]], uint i [[vertex_id]]) {
@@ -41,7 +38,7 @@ fragment color_t fragmentShader(vertex_t vert [[stage_in]], constant shader_cont
     const float angle = atan2(position.y, position.x);
 
     if (distance > 1.0)
-        return context->clear_color;
+        return color_t(0.0, 0.0, 0.0, 0.0); // Make out-of-circle pixels transparent
 
     // Calculate the OKLCH colors based on the coordinates
     const float l = 0.6 + (1.0 - 0.6) * (1.0 - distance);

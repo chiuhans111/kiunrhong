@@ -21,10 +21,9 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
         self.colorPixelFormat = .rgba16Float
         self.colorspace = CGColorSpace(name: CGColorSpace.displayP3)
+        self.layer!.isOpaque = false
         self.layer!.wantsExtendedDynamicRangeContent = true
-
-        let clearColor = NSColor.windowBackgroundColor.usingColorSpace(NSColorSpace.displayP3)!
-        self.clearColor = MTLClearColor(red: clearColor.redComponent, green: clearColor.greenComponent, blue: clearColor.blueComponent, alpha: clearColor.alphaComponent)
+        self.clearColor = MTLClearColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
 
         // Load our shaders
         let library = device.makeDefaultLibrary()!
@@ -78,11 +77,9 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
     struct FragmentContext {
         var drawableSize: simd_packed_float2
-        var clearColor: simd_packed_half4
 
-        init(size: CGSize, color: MTLClearColor) {
+        init(size: CGSize) {
             self.drawableSize = simd_packed_float2(Float(size.width), Float(size.height))
-            self.clearColor = simd_packed_half4(Float16(color.red), Float16(color.green), Float16(color.blue), Float16(color.alpha))
         }
     }
 
@@ -113,7 +110,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         // Set up buffers
         encoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
 
-        var context = FragmentContext(size: self.drawableSize, color: self.clearColor)
+        var context = FragmentContext(size: self.drawableSize)
         updateFragmentBuffer(&context)
         encoder.setFragmentBuffer(self.fragmentBuffer, offset: 0, index: 0)
 
