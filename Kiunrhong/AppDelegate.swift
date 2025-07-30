@@ -13,8 +13,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-        window = NSWindow(contentRect: .init(x: 0, y: 0, width: 800, height: 560),
+        window = NSWindow(contentRect: .init(x: 0, y: 0, width: 480, height: 360),
                           styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
+        window.title = "Kiunrhong"
         window.contentView = ColorPickerView()
         window.center()
         window.makeKeyAndOrderFront(nil)

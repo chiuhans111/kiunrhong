@@ -12,6 +12,7 @@ class ColorPickerView : NSView {
     var spectrumView: ColorSpectrumView!
     var trackingArea: NSTrackingArea?
     var infoTextField: NSTextField!
+    var selectionPin: NSImageView!
 
     var isLocked = false
     var currentSelection: (Double, Double, Double)?
@@ -37,11 +38,16 @@ class ColorPickerView : NSView {
         self.infoTextField = NSTextField(labelWithString: "-")
         infoTextField.translatesAutoresizingMaskIntoConstraints = false
         infoTextField.font = createTabularLabelFont()
-
         self.addSubview(infoTextField)
 
         infoTextField.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
         infoTextField.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor).isActive = true
+
+        let crosshairImage = NSImage(systemSymbolName: "plus", accessibilityDescription: "Crosshair")!
+        self.selectionPin = NSImageView(image: crosshairImage)
+        selectionPin.symbolConfiguration = .init(pointSize: 20, weight: .light).applying(.init(paletteColors: [.black]))
+        selectionPin.isHidden = true
+        self.addSubview(selectionPin)
     }
 
     required init(coder: NSCoder) {
@@ -91,23 +97,15 @@ class ColorPickerView : NSView {
             clearSelection(); return // Out-of-bound
         }
 
-        // Set the mouse cursor if haven’t done so
-        if NSCursor.current != NSCursor.crosshair {
-            NSCursor.crosshair.set()
-        }
-
         // Estimate plotted color
         let l = spectrumView.lightness + (1.0 - spectrumView.lightness) * (1.0 - distance)
         let c = spectrumView.chroma
         let h = Double(angleInDegrees + 360.0).truncatingRemainder(dividingBy: 360.0)
 
         // Update the view with selection
-        setSelection(l: l, c: c, h: h)
-    }
-
-    private func setSelection(l: Double, c: Double, h: Double) {
         currentSelection = (l, c, h)
         infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", l, c, h)
+        NSCursor.crosshair.set()
     }
 
     override func mouseExited(with event: NSEvent) {
@@ -118,14 +116,22 @@ class ColorPickerView : NSView {
     private func clearSelection() {
         currentSelection = nil
         infoTextField.stringValue = ""
+        selectionPin.isHidden = true
     }
 
     override func mouseUp(with event: NSEvent) {
         // Only perform locking/unlocking when there is current color
         guard currentSelection != nil else { return }
 
-        if isLocked { updateSelection(with: event) }
         isLocked = !isLocked
+        if !isLocked {
+            updateSelection(with: event)
+        } else {
+            let position = self.convert(event.locationInWindow, from: nil)
+            let size = selectionPin.image!.size
+            selectionPin.setFrameOrigin(.init(x: position.x - size.width / 2, y: position.y - size.height / 2))
+            selectionPin.isHidden = false
+        }
     }
 }
 
