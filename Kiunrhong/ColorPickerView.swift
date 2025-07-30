@@ -13,6 +13,9 @@ class ColorPickerView : NSView {
     var trackingArea: NSTrackingArea?
     var infoTextField: NSTextField!
 
+    var isLocked = false
+    var currentSelection: (Double, Double, Double)?
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -69,8 +72,12 @@ class ColorPickerView : NSView {
     }
 
     override func mouseMoved(with event: NSEvent) {
-        super.mouseMoved(with: event)
+        // Don’t update the values if we are in Lock mode
+        guard !isLocked else { return }
+        updateSelection(with: event)
+    }
 
+    private func updateSelection(with event: NSEvent) {
         // Convert the coordinates to spectrum view’s coordinates
         let localPoint = spectrumView.convert(event.locationInWindow, from: nil)
         let relativePosition = (dx: localPoint.x - spectrumView.bounds.width / 2.0, dy: localPoint.y - spectrumView.bounds.height / 2.0)
@@ -81,19 +88,44 @@ class ColorPickerView : NSView {
         let angleInDegrees = atan2(relativePosition.dy, relativePosition.dx) * 180.0 / .pi
 
         guard distance <= 1.0 else {
-            infoTextField.stringValue = ""; return // Out-of-bound
+            clearSelection(); return // Out-of-bound
+        }
+
+        // Set the mouse cursor if haven’t done so
+        if NSCursor.current != NSCursor.crosshair {
+            NSCursor.crosshair.set()
         }
 
         // Estimate plotted color
         let l = spectrumView.lightness + (1.0 - spectrumView.lightness) * (1.0 - distance)
         let c = spectrumView.chroma
-        let h = (angleInDegrees + 360.0).truncatingRemainder(dividingBy: 360.0)
+        let h = Double(angleInDegrees + 360.0).truncatingRemainder(dividingBy: 360.0)
 
-        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.4f", l, c, h)
+        // Update the view with selection
+        setSelection(l: l, c: c, h: h)
+    }
+
+    private func setSelection(l: Double, c: Double, h: Double) {
+        currentSelection = (l, c, h)
+        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", l, c, h)
     }
 
     override func mouseExited(with event: NSEvent) {
+        if !isLocked { clearSelection() }
+        NSCursor.pop()
+    }
+
+    private func clearSelection() {
+        currentSelection = nil
         infoTextField.stringValue = ""
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        // Only perform locking/unlocking when there is current color
+        guard currentSelection != nil else { return }
+
+        if isLocked { updateSelection(with: event) }
+        isLocked = !isLocked
     }
 }
 
