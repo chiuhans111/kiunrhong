@@ -6,7 +6,7 @@ Experimental color picker and utilities.
 Naming
 ------
 
-虹(<em lang="hak-tw">kīung</em>, *rainbow*)、共樣(<em lang="hak-tw">kīung rhōng</em>, *the same*) as in Taiwanes Hakka.
+虹 (<em lang="hak-tw">kīung</em>, *rainbow*)、共樣 (<em lang="hak-tw">kīung rhōng</em>, *the same*) as in Taiwanese Hakka.
 
 License
 -------

@@ -34,9 +34,10 @@ fragment color_t fragmentShader(vertex_t vert [[stage_in]], constant shader_cont
     const float2 rel_pos = (vert.position.xy - context->origin);
     const float radius = sqrt(pow(rel_pos.x, 2) + pow(rel_pos.y, 2)) / (min(context->size.x, context->size.y) / 2);
     const float theta = atan2(rel_pos.y, rel_pos.x);
+    if (radius > 1.0) return color_t(1, 1, 1, 1);
 
     // Set up OKLCH parameters
-    const float l = 0.667 + (1.0 - 0.667) * (1.0 - radius);
+    const float l = 0.6 + (1.0 - 0.6) * (1.0 - radius);
     const float c = 0.168 * radius;
     const float h = (180 + (theta / M_PI_F * 180.0));
     const float3 oklch = float3(l, c, h);
