@@ -24,7 +24,6 @@ let xyzToLinearRec2020 = Matrix3x3( 30757411.0 / 17917100.0, -6372589.0 / 179171
                                    792561.0 / 44930125.0, -1921689.0 / 44930125.0, 42328811.0 / 44930125.0)
 
 extension NSColor {
-
     convenience init(oklchL: CGFloat, c: CGFloat, h: CGFloat, alpha: CGFloat = 1.0) {
         let xyz = oklchToXYZ((oklchL, c, h))
         let p3 = xyzToP3(xyz)
@@ -51,7 +50,6 @@ extension NSColor {
         self.init(colorSpace: nsColorSpace, components: components, count: components.count)
         print(self, self.cgColor)
     }
-
 }
 
 typealias Vector3 = (CGFloat, CGFloat, CGFloat)

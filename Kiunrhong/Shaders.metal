@@ -10,6 +10,7 @@
 using namespace metal;
 
 typedef float2 point_t;
+typedef float2 bound_t;
 typedef float4 coord_t;
 typedef half4 color_t;
 
@@ -18,11 +19,11 @@ struct vertex_t {
 };
 
 struct shader_context {
-    /// The center of the view.
-    point_t origin;
+    /// The size of the currently rendering drawable.
+    bound_t drawable_size;
 
-    /// The overall size of the view.
-    float2 size;
+    /// The set background color.
+    color_t clear_color;
 };
 
 vertex vertex_t vertexShader(constant vertex_t *vertices [[buffer(0)]], uint i [[vertex_id]]) {
@@ -30,16 +31,24 @@ vertex vertex_t vertexShader(constant vertex_t *vertices [[buffer(0)]], uint i [
 }
 
 fragment color_t fragmentShader(vertex_t vert [[stage_in]], constant shader_context *context [[buffer(0)]]) {
-    // Calculate the relative position, radius, and angle from the view center
-    const float2 rel_pos = (vert.position.xy - context->origin);
-    const float radius = sqrt(pow(rel_pos.x, 2) + pow(rel_pos.y, 2)) / (min(context->size.x, context->size.y) / 2);
-    const float theta = atan2(rel_pos.y, rel_pos.x);
-    if (radius > 1.0) return color_t(1, 1, 1, 1);
+    // Loads the data from buffer
+    const bound_t size = context->drawable_size;
+    const float radius = min(size.x, size.y) / 2.0;
 
-    // Set up OKLCH parameters
-    const float l = 0.6 + (1.0 - 0.6) * (1.0 - radius);
-    const float c = 0.168 * radius;
-    const float h = (180 + (theta / M_PI_F * 180.0));
+    // Calculate the coordinates and distance relative to the center of the view.
+    const float2 position = (vert.position.xy - size / 2.0);
+    const float distance = sqrt(pow(position.x, 2) + pow(position.y, 2)) / radius;
+    const float angle = atan2(position.y, position.x);
+
+    if (distance > 1.0)
+        return context->clear_color;
+
+    // Calculate the OKLCH colors based on the coordinates
+    const float l = 0.6 + (1.0 - 0.6) * (1.0 - distance);
+    const float c = 0.168 * distance;
+    const float h = (180 + (angle / M_PI_F * 180.0));
+
+    // Convert the color to Display P3 colorspace and render
     const float3 oklch = float3(l, c, h);
     const float3 color = xyz_to_p3(oklab_to_xyz(oklch_to_oklab(oklch)));
     return color_t(color.x, color.y, color.z, 1.0);
