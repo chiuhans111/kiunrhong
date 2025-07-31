@@ -15,12 +15,7 @@ class ColorPickerView : NSView {
     var selectionPin: NSImageView!
     var componentFields: [ColorPickerComponent]!
 
-    var currentSelection: OKLCHColor? {
-        didSet {
-            // TODO: updatePinLocation()
-            if (currentSelection != nil) { updateComponentFields(color: currentSelection!) }
-        }
-    }
+    var currentSelection: OKLCHColor?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -90,22 +85,44 @@ class ColorPickerView : NSView {
 
         // Set the new one in accordance to updated bounds
         self.trackingArea = NSTrackingArea(rect: self.bounds,
-                                           options: [.mouseMoved, .activeInActiveApp],
+                                           options: [.mouseMoved, .enabledDuringMouseDrag, .activeInActiveApp],
                                            owner: self, userInfo: nil)
         self.addTrackingArea(trackingArea!)
     }
 
     override func mouseMoved(with event: NSEvent) {
-        // Calculate the polar coordinate within the color wheel
-        if let coordinate = spectrumView.pointToPolarCoordinate(from: event.locationInWindow) {
-            NSCursor.crosshair.set()
-            let color = spectrumView.colorAtCoordinate(coordinate)
-            updateInfoText(color: color)
+        if handleMouseMove(locationInWindow: event.locationInWindow, mouseClicked: false) {
+            NSCursor.crosshair.set()    // Event handled. Just set the cursor.
         } else {
-            // We’re outside of the wheel. Clear everything unless the cursor is locked.
-            NSCursor.arrow.set()
+            NSCursor.arrow.set()    // We’re outside of the wheel. Clear everything.
             clearInfoText()
         }
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        if handleMouseMove(locationInWindow: event.locationInWindow, mouseClicked: true) {
+            NSCursor.crosshair.set()    // Event handled. Just set the cursor.
+        } else {
+            NSCursor.arrow.set()    // We’re outside of the wheel. Clear everything.
+            clearInfoText()
+        }
+    }
+
+    private func handleMouseMove(locationInWindow: NSPoint, mouseClicked: Bool) -> Bool {
+        // Make sure we’re within the color wheel
+        guard let coordinate = spectrumView.pointToPolarCoordinate(from: locationInWindow) else { return false }
+
+        // Calculate the color and update the info text.
+        let color = spectrumView.colorAtCoordinate(coordinate)
+        updateInfoText(color: color)
+
+        if mouseClicked {
+            // Select the color at the coordinate.
+            let location = self.convert(locationInWindow, from: nil)
+            setCurrentSelection(color, at: location)
+        }
+
+        return true
     }
 
     private func updateInfoText(color: OKLCHColor) {
@@ -113,47 +130,51 @@ class ColorPickerView : NSView {
     }
 
     private func clearInfoText() {
-        currentSelection = nil
         infoTextField.stringValue = ""
     }
 
-    private func updatePinLocation(_ locationInWindow: NSPoint?) {
-        // TODO: Remove locationInWindow dependency
-        if (currentSelection != nil) {
-            let position = self.convert(locationInWindow!, from: nil)
-            let size = selectionPin.image!.size
-            selectionPin.setFrameOrigin(.init(x: position.x - size.width / 2, y: position.y - size.height / 2))
-            selectionPin.isHidden = false
+    func setCurrentSelection(_ color: OKLCHColor?, at location: CGPoint? = nil) {
+        self.currentSelection = color
+        if (color != nil) {
+            updateComponentFields()
+            updatePinLocation(location: location)
         } else {
-            selectionPin.isHidden = true
+            clearPinLocation()
         }
     }
 
-    private func updateComponentFields(color: OKLCHColor) {
+    private func updatePinLocation(location: CGPoint? = nil) {
+        // Calculate the pin position if not provided
+        var position: CGPoint
+        if location != nil {
+            position = location!
+        } else {
+            let polarCoord = spectrumView.colorToCoordinate(self.currentSelection!)
+            let viewCoord = spectrumView.pointFromPolarCoordinate(polarCoord!)
+            position = self.convert(viewCoord, from: spectrumView)
+        }
+
+        let size = selectionPin.image!.size
+        selectionPin.setFrameOrigin(.init(x: position.x - size.width / 2, y: position.y - size.height / 2))
+        selectionPin.isHidden = false
+    }
+
+    func clearPinLocation() {
+        selectionPin.isHidden = true
+    }
+
+    private func updateComponentFields() {
+        let color = self.currentSelection!
         for case let (value, index) in [(color.l, 0), (color.c, 1), (color.h, 2)] {
             componentFields[index].setDoubleValue(value)
         }
     }
 
     override func mouseUp(with event: NSEvent) {
-        if let coordinate = spectrumView.pointToPolarCoordinate(from: event.locationInWindow) {
-            // We’re within the color wheel. Calculate the color and update the info text.
-            let color = spectrumView.colorAtCoordinate(coordinate)
-            updateInfoText(color: color)
-
-            // Select the color at the coordinate.
-            self.currentSelection = color
-
-            // Calculate the pin position and show the crosshair.
-            // TODO: Remove this and let didSet do the work
-            updatePinLocation(event.locationInWindow)
-        } else {
-            // We’re outside of the view. Unlock (deselect) if needed.
+        if !handleMouseMove(locationInWindow: event.locationInWindow, mouseClicked: true) {
+            // We’re outside of the view and a mouse click has been detected.
             if self.currentSelection != nil {
-                self.currentSelection = nil
-
-                // TODO: Remove this and let didSet do the work
-                updatePinLocation(nil)
+                setCurrentSelection(nil)    // Deselect if needed.
             }
         }
     }
