@@ -97,7 +97,7 @@ class ColorPickerView : NSView {
 
     override func mouseMoved(with event: NSEvent) {
         // Calculate the polar coordinate within the color wheel
-        if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
+        if let coordinate = spectrumView.pointToPolarCoordinate(from: event.locationInWindow) {
             NSCursor.crosshair.set()
             let color = spectrumView.colorAtCoordinate(coordinate)
             updateInfoText(color: color)
@@ -136,7 +136,7 @@ class ColorPickerView : NSView {
     }
 
     override func mouseUp(with event: NSEvent) {
-        if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
+        if let coordinate = spectrumView.pointToPolarCoordinate(from: event.locationInWindow) {
             // We’re within the color wheel. Calculate the color and update the info text.
             let color = spectrumView.colorAtCoordinate(coordinate)
             updateInfoText(color: color)

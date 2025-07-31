@@ -62,34 +62,32 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     // UI functions
     //
 
-    func calculatePolarCoordinate(from locationInWindow: NSPoint) -> PolarCoordinate? {
+    func pointToPolarCoordinate(from locationInWindow: NSPoint) -> PolarCoordinate? {
         // Convert the coordinates to spectrum view’s coordinates
         let localPoint = self.convert(locationInWindow, from: nil)
-        let relativePosition = (dx: localPoint.x - self.bounds.width / 2.0,
-                                dy: localPoint.y - self.bounds.height / 2.0)
-        let wheelRadius = min(self.bounds.width, self.bounds.height) / 2.0
-
-        // Calculate the distance and angle in the color wheel
-        let r = sqrt(relativePosition.dx * relativePosition.dx + relativePosition.dy * relativePosition.dy) / wheelRadius
-        let t = atan2(relativePosition.dy, relativePosition.dx) * 180.0 / .pi
+        let coordinate = PolarCoordinate(point: localPoint, bounds: self.bounds.size)
 
         // Only returns the coordinate if the point is within the circle
-        return if r <= 1.0 { PolarCoordinate(r: r, t: t) } else { nil }
+        return if coordinate.r <= 1.0 { coordinate } else { nil }
     }
 
     func colorAtCoordinate(_ coordinate: PolarCoordinate) -> OKLCHColor {
         // Estimate plotted color
         let l = self.lightness + (1.0 - self.lightness) * (1.0 - coordinate.r)
         let c = self.chroma
-        let h = Double(coordinate.t + 360.0).truncatingRemainder(dividingBy: 360.0)
+        let h = (180.0 - coordinate.phi).truncatingRemainder(dividingBy: 360.0)
         return OKLCHColor(l, c, h)
     }
 
     func colorToCoordinate(_ color: OKLCHColor) -> PolarCoordinate? {
         // Currently we don’t check chroma
         let r = (color.l - self.lightness) / (1.0 - self.lightness)
-        let t = (color.h - 180.0)
-        return if r <= 1.0 { PolarCoordinate(r: r, t: t) } else { nil }
+        let t = (color.h - 180.0) / 180.0 * .pi
+        return if r <= 1.0 { PolarCoordinate(r, t) } else { nil }
+    }
+
+    func pointFromPolarCoordinate(_ coordinate: PolarCoordinate) -> NSPoint {
+        return coordinate.toCartesian(bounds: self.bounds.size)
     }
 
     //
