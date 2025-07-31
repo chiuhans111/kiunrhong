@@ -13,7 +13,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func createApplicationWindow() -> NSWindow {
         let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 480, height: 360),
-                          styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
+                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "Kiunrhong"
         window.contentView = ColorPickerView()
         return window
