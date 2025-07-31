@@ -52,11 +52,29 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         self.isPaused = true
         self.enableSetNeedsDisplay = true
         self.delegate = self
-        self.needsDisplay = true
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    //
+    // UI functions
+    //
+
+    func calculatePolarCoordinate(from locationInWindow: NSPoint) -> (r: CGFloat, t: CGFloat)? {
+        // Convert the coordinates to spectrum view’s coordinates
+        let localPoint = self.convert(locationInWindow, from: nil)
+        let relativePosition = (dx: localPoint.x - self.bounds.width / 2.0,
+                                dy: localPoint.y - self.bounds.height / 2.0)
+        let wheelRadius = min(self.bounds.width, self.bounds.height) / 2.0
+
+        // Calculate the distance and angle in the color wheel
+        let distance = sqrt(relativePosition.dx * relativePosition.dx + relativePosition.dy * relativePosition.dy) / wheelRadius
+        let angleInDegrees = atan2(relativePosition.dy, relativePosition.dx) * 180.0 / .pi
+
+        // Only returns the coordinate if the point is within the circle
+        return if distance <= 1.0 { (distance, angleInDegrees) } else { nil }
     }
 
     //

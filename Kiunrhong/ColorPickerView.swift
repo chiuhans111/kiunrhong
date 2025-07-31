@@ -35,7 +35,7 @@ class ColorPickerView : NSView {
         spectrumView.topAnchor.constraint(equalToSystemSpacingBelow: self.layoutMarginsGuide.topAnchor, multiplier: 0.5).isActive = true
         spectrumView.bottomAnchor.constraint(equalToSystemSpacingBelow: self.layoutMarginsGuide.bottomAnchor, multiplier: -0.5).isActive = true
 
-        self.infoTextField = NSTextField(labelWithString: "-")
+        self.infoTextField = NSTextField(labelWithString: "")
         infoTextField.translatesAutoresizingMaskIntoConstraints = false
         infoTextField.font = createTabularLabelFont()
         self.addSubview(infoTextField)
@@ -58,7 +58,12 @@ class ColorPickerView : NSView {
         let systemFont = NSFont.labelFont(ofSize: NSFont.labelFontSize)
         let descriptor = NSFontDescriptor(fontAttributes: [
             .family: systemFont.familyName!,
-            .featureSettings: [kNumberSpacingType: kMonospacedNumbersSelector]
+            .featureSettings: [
+                [
+                    NSFontDescriptor.FeatureKey.typeIdentifier: kNumberSpacingType,
+                    NSFontDescriptor.FeatureKey.selectorIdentifier: kMonospacedNumbersSelector,
+                ],
+            ]
         ])
         return NSFont(descriptor: descriptor, size: systemFont.pointSize)!
     }
@@ -78,25 +83,18 @@ class ColorPickerView : NSView {
     }
 
     override func mouseMoved(with event: NSEvent) {
-        // Don’t update the values if we are in Lock mode
-        guard !isLocked else { return }
-        updateSelection(with: event)
+        // Calculate the polar coordinate within the color wheel
+        if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
+            NSCursor.crosshair.set()
+            if !isLocked { updateSelection(distance: coordinate.r, angleInDegrees: coordinate.t) }
+        } else {
+            // We’re outside of the wheel. Clear everything unless the cursor is locked.
+            NSCursor.arrow.set()
+            if !isLocked { clearSelection() }
+        }
     }
 
-    private func updateSelection(with event: NSEvent) {
-        // Convert the coordinates to spectrum view’s coordinates
-        let localPoint = spectrumView.convert(event.locationInWindow, from: nil)
-        let relativePosition = (dx: localPoint.x - spectrumView.bounds.width / 2.0, dy: localPoint.y - spectrumView.bounds.height / 2.0)
-        let wheelRadius = min(spectrumView.bounds.width, spectrumView.bounds.height) / 2.0
-
-        // Calculate the distance and angle in the color wheel
-        let distance = sqrt(relativePosition.dx * relativePosition.dx + relativePosition.dy * relativePosition.dy) / wheelRadius
-        let angleInDegrees = atan2(relativePosition.dy, relativePosition.dx) * 180.0 / .pi
-
-        guard distance <= 1.0 else {
-            clearSelection(); return // Out-of-bound
-        }
-
+    private func updateSelection(distance: Double, angleInDegrees: Double) {
         // Estimate plotted color
         let l = spectrumView.lightness + (1.0 - spectrumView.lightness) * (1.0 - distance)
         let c = spectrumView.chroma
@@ -105,32 +103,35 @@ class ColorPickerView : NSView {
         // Update the view with selection
         currentSelection = (l, c, h)
         infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", l, c, h)
-        NSCursor.crosshair.set()
     }
 
     override func mouseExited(with event: NSEvent) {
-        if !isLocked { clearSelection() }
-        NSCursor.pop()
+        NSCursor.arrow.set()
     }
 
     private func clearSelection() {
         currentSelection = nil
         infoTextField.stringValue = ""
-        selectionPin.isHidden = true
     }
 
     override func mouseUp(with event: NSEvent) {
-        // Only perform locking/unlocking when there is current color
-        guard currentSelection != nil else { return }
+        if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
+            // We’re within the color wheel. Lock to the new coordinate.
+            isLocked = true
+            updateSelection(distance: coordinate.r, angleInDegrees: coordinate.t)
 
-        isLocked = !isLocked
-        if !isLocked {
-            updateSelection(with: event)
-        } else {
+            // Calculate the pin position and show the crosshair
             let position = self.convert(event.locationInWindow, from: nil)
             let size = selectionPin.image!.size
             selectionPin.setFrameOrigin(.init(x: position.x - size.width / 2, y: position.y - size.height / 2))
             selectionPin.isHidden = false
+        } else {
+            // We’re outside of the view. Unlock (deselect) if needed.
+            if isLocked {
+                isLocked = false
+                clearSelection()
+                selectionPin.isHidden = true
+            }
         }
     }
 }
