@@ -18,6 +18,8 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     var lightness = 0.6
     var chroma = 0.168
 
+    var target: (any ColorSpectrumViewDelegate)?
+
     init(frame frameRect: NSRect) {
         let device = MTLCreateSystemDefaultDevice()!
         super.init(frame: frameRect, device: device)
@@ -60,6 +62,43 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
     //
     // UI functions
+    //
+
+    override func updateTrackingAreas() {
+        // Remove the existing one if exists
+        if self.trackingAreas.count > 0 {
+            self.removeTrackingArea(self.trackingAreas[0])
+        }
+
+        // Set the new one in accordance to updated bounds
+        let trackingArea = NSTrackingArea(rect: self.bounds,
+                                          options: [.mouseMoved, .mouseEnteredAndExited, .activeInActiveApp],
+                                          owner: self, userInfo: nil)
+        self.addTrackingArea(trackingArea)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        self.target?.colorSpectrumMouseEvent(self, with: event)
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        self.target?.colorSpectrumMouseEvent(self, with: event)
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        self.target?.colorSpectrumMouseEvent(self, with: event)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        self.target?.colorSpectrumMouseEvent(self, with: event)
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        self.target?.colorSpectrumMouseEvent(self, with: event)
+    }
+
+    //
+    // Coordinate functions
     //
 
     func pointToPolarCoordinate(from locationInWindow: NSPoint) -> PolarCoordinate? {
@@ -158,4 +197,10 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         buffer.present(drawable)
         buffer.commit()
     }
+}
+
+protocol ColorSpectrumViewDelegate : NSObjectProtocol {
+
+    func colorSpectrumMouseEvent(_ sender: ColorSpectrumView, with event: NSEvent)
+
 }

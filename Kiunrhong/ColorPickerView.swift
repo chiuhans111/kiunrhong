@@ -7,10 +7,9 @@
 import AppKit
 import MetalKit
 
-class ColorPickerView : NSView {
+class ColorPickerView : NSView, ColorSpectrumViewDelegate {
 
     var spectrumView: ColorSpectrumView!
-    var trackingArea: NSTrackingArea?
     var infoTextField: NSTextField!
     var selectionPin: NSImageView!
     var componentFields: [ColorPickerComponent]!
@@ -28,6 +27,7 @@ class ColorPickerView : NSView {
         self.spectrumView = ColorSpectrumView(frame: frameRect)
         spectrumView.translatesAutoresizingMaskIntoConstraints = false
         spectrumView.widthAnchor.constraint(equalTo: spectrumView.heightAnchor).isActive = true
+        spectrumView.target = self
         self.addSubview(spectrumView)
 
         spectrumView.leadingAnchor.constraint(equalToSystemSpacingAfter: self.layoutMarginsGuide.leadingAnchor, multiplier: 0.5).isActive = true
@@ -77,60 +77,27 @@ class ColorPickerView : NSView {
         fatalError( "init(coder:) has not been implemented" )
     }
 
-    override func updateTrackingAreas() {
-        // Remove the existing one if exists
-        if trackingArea != nil {
-            self.removeTrackingArea(trackingArea!)
-        }
-
-        // Set the new one in accordance to updated bounds
-        self.trackingArea = NSTrackingArea(rect: self.bounds,
-                                           options: [.mouseMoved, .enabledDuringMouseDrag, .activeInActiveApp],
-                                           owner: self, userInfo: nil)
-        self.addTrackingArea(trackingArea!)
-    }
-
-    override func mouseMoved(with event: NSEvent) {
-        if handleMouseMove(locationInWindow: event.locationInWindow, mouseClicked: false) {
-            NSCursor.crosshair.set()    // Event handled. Just set the cursor.
-        } else {
+    func colorSpectrumMouseEvent(_: ColorSpectrumView, with event: NSEvent) {
+        guard let coordinate = spectrumView.pointToPolarCoordinate(from: event.locationInWindow) else {
             NSCursor.arrow.set()    // We’re outside of the wheel. Clear everything.
-            clearInfoText()
+            infoTextField.stringValue = ""
+            return
         }
-    }
 
-    override func mouseDragged(with event: NSEvent) {
-        if handleMouseMove(locationInWindow: event.locationInWindow, mouseClicked: true) {
-            NSCursor.crosshair.set()    // Event handled. Just set the cursor.
-        } else {
-            NSCursor.arrow.set()    // We’re outside of the wheel. Clear everything.
-            clearInfoText()
-        }
-    }
-
-    private func handleMouseMove(locationInWindow: NSPoint, mouseClicked: Bool) -> Bool {
-        // Make sure we’re within the color wheel
-        guard let coordinate = spectrumView.pointToPolarCoordinate(from: locationInWindow) else { return false }
+        // Set the current cursor as crosshair
+        NSCursor.crosshair.set()
 
         // Calculate the color and update the info text.
         let color = spectrumView.colorAtCoordinate(coordinate)
-        updateInfoText(color: color)
-
-        if mouseClicked {
-            // Select the color at the coordinate.
-            let location = self.convert(locationInWindow, from: nil)
-            setCurrentSelection(color, at: location)
-        }
-
-        return true
-    }
-
-    private func updateInfoText(color: OKLCHColor) {
         infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", color.l, color.c, color.h)
-    }
 
-    private func clearInfoText() {
-        infoTextField.stringValue = ""
+        switch event.type {
+        case .leftMouseDown, .leftMouseDragged, .leftMouseUp:
+            // Select the color at the coordinate.
+            let location = self.convert(event.locationInWindow, from: nil)
+            setCurrentSelection(color, at: location)
+        default: break
+        }
     }
 
     func setCurrentSelection(_ color: OKLCHColor?, at location: CGPoint? = nil) {
@@ -167,15 +134,6 @@ class ColorPickerView : NSView {
         let color = self.currentSelection!
         for case let (value, index) in [(color.l, 0), (color.c, 1), (color.h, 2)] {
             componentFields[index].setDoubleValue(value)
-        }
-    }
-
-    override func mouseUp(with event: NSEvent) {
-        if !handleMouseMove(locationInWindow: event.locationInWindow, mouseClicked: true) {
-            // We’re outside of the view and a mouse click has been detected.
-            if self.currentSelection != nil {
-                setCurrentSelection(nil)    // Deselect if needed.
-            }
         }
     }
 }
