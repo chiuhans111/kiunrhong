@@ -8,14 +8,29 @@ import AppKit
 class ColorGradientView : NSView {
 
     override func draw(_ dirtyRect: NSRect) {
+        let c1 = OKLCHColor(0.8647, 0.3398, 141.88).oklchToXYZ()
+        let c2 = OKLCHColor(0.7133, 0.3478, 331.41).oklchToXYZ()    // These two colors are only available in P3 space
+        let c3 = OKLCHColor(0.8325, 0.46, 152.1).oklchToXYZ()
+        let c4 = OKLCHColor(0.742, 0.4205, 337).oklchToXYZ()        // These two colors are only available in Rec2020 space
+
+        let displayP3 = CGColorSpace(name: CGColorSpace.displayP3)!
+        let rec2020 = CGColorSpace(name: CGColorSpace.itur_2020)!
+
         let gradients = [
-            (NSColor(oklchToRec2020L: 0.8647, c: 0.3398, h: 141.88), NSColor(oklchToRec2020L: 0.7133, c: 0.3478, h: 331.41)), // P3-only color to Rec2020
-            (NSColor(oklchToDisplayP3L: 0.8647, c: 0.3398, h: 141.88), NSColor(oklchToDisplayP3L: 0.7133, c: 0.3478, h: 331.41)),  // P3-only color to P3
-            (NSColor(oklchL: 0.8647, c: 0.3398, h: 141.88), NSColor(oklchL: 0.7133, c: 0.3478, h: 331.41)), // P3-only color to P3
-            (NSColor(displayP3Red: 0.3818, green: 0.9995, blue: 0.0311, alpha: 1.0), NSColor(displayP3Red: 0.973, green: 0.0835, blue: 0.9733, alpha: 1.0)), // P3-only color
-            (NSColor(oklchL: 0.8325, c: 0.46, h: 152.1), NSColor(oklchL: 0.742, c: 0.4205, h: 337)), // Rec2020-only color to P3
-            (NSColor(oklchToRec2020L: 0.8325, c: 0.46, h: 152.1), NSColor(oklchToRec2020L: 0.742, c: 0.4205, h: 337)), // Rec2020-only color to Rec2020
+            (NSColor(cgColor: c1.xyzToRec2020().toCGColor(withColorSpace: rec2020)!)!,
+             NSColor(cgColor: c2.xyzToRec2020().toCGColor(withColorSpace: rec2020)!)!), // P3-only color to Rec2020
+            (NSColor(cgColor: c1.xyzToDisplayP3().toCGColor(withColorSpace: displayP3)!)!,
+             NSColor(cgColor: c2.xyzToDisplayP3().toCGColor(withColorSpace: displayP3)!)!),  // P3-only color to P3
+            (c1.xyzToDisplayP3().toDisplayP3Color(),
+             c2.xyzToDisplayP3().toDisplayP3Color()), // P3-only color to P3
+            (NSColor(displayP3Red: 0.3818, green: 0.9995, blue: 0.0311, alpha: 1.0),
+             NSColor(displayP3Red: 0.973, green: 0.0835, blue: 0.9733, alpha: 1.0)), // P3-only color comparison
+            (c3.xyzToDisplayP3().toDisplayP3Color(),
+             c4.xyzToDisplayP3().toDisplayP3Color()), // Rec2020-only color to P3
+            (NSColor(cgColor: c3.xyzToRec2020().toCGColor(withColorSpace: rec2020)!)!,
+             NSColor(cgColor: c4.xyzToRec2020().toCGColor(withColorSpace: rec2020)!)!), // Rec2020-only color to Rec2020
         ]
+
         let bounds = self.bounds
         let size = CGSize(width: bounds.width / CGFloat(gradients.count), height: bounds.height)
 
