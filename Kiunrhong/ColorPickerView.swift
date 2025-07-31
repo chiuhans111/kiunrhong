@@ -109,7 +109,7 @@ class ColorPickerView : NSView {
     }
 
     private func updateInfoText(color: OKLCHColor) {
-        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", color.a1, color.a2, color.a3)
+        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", color.l, color.c, color.h)
     }
 
     private func clearInfoText() {
@@ -130,7 +130,7 @@ class ColorPickerView : NSView {
     }
 
     private func updateComponentFields(color: OKLCHColor) {
-        for case let (value, index) in [(color.a1, 0), (color.a2, 1), (color.a3, 2)] {
+        for case let (value, index) in [(color.l, 0), (color.c, 1), (color.h, 2)] {
             componentFields[index].setDoubleValue(value)
         }
     }

@@ -105,11 +105,6 @@ class ColorPickerComponent: NSView, NSTextFieldDelegate {
         valueDidSet()
     }
 
-    /*func control(_ control: NSControl, textShouldEndEditing fieldEditor: NSText) -> Bool {
-        guard let value = Double(fieldEditor.string) else { return false }
-        return minValue...maxValue ~= value
-    }*/
-
     func controlTextDidChange(_ obj: Notification) {
         self.doubleValue = field.doubleValue
         valueDidSet()

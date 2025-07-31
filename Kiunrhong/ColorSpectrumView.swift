@@ -62,7 +62,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     // UI functions
     //
 
-    func calculatePolarCoordinate(from locationInWindow: NSPoint) -> (r: CGFloat, t: CGFloat)? {
+    func calculatePolarCoordinate(from locationInWindow: NSPoint) -> PolarCoordinate? {
         // Convert the coordinates to spectrum view’s coordinates
         let localPoint = self.convert(locationInWindow, from: nil)
         let relativePosition = (dx: localPoint.x - self.bounds.width / 2.0,
@@ -70,19 +70,26 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         let wheelRadius = min(self.bounds.width, self.bounds.height) / 2.0
 
         // Calculate the distance and angle in the color wheel
-        let distance = sqrt(relativePosition.dx * relativePosition.dx + relativePosition.dy * relativePosition.dy) / wheelRadius
-        let angleInDegrees = atan2(relativePosition.dy, relativePosition.dx) * 180.0 / .pi
+        let r = sqrt(relativePosition.dx * relativePosition.dx + relativePosition.dy * relativePosition.dy) / wheelRadius
+        let t = atan2(relativePosition.dy, relativePosition.dx) * 180.0 / .pi
 
         // Only returns the coordinate if the point is within the circle
-        return if distance <= 1.0 { (distance, angleInDegrees) } else { nil }
+        return if r <= 1.0 { PolarCoordinate(r: r, t: t) } else { nil }
     }
 
-    func colorAtCoordinate(_ coordinate: (r: CGFloat, t: CGFloat)) -> OKLCHColor {
+    func colorAtCoordinate(_ coordinate: PolarCoordinate) -> OKLCHColor {
         // Estimate plotted color
         let l = self.lightness + (1.0 - self.lightness) * (1.0 - coordinate.r)
         let c = self.chroma
         let h = Double(coordinate.t + 360.0).truncatingRemainder(dividingBy: 360.0)
         return OKLCHColor(l, c, h)
+    }
+
+    func colorToCoordinate(_ color: OKLCHColor) -> PolarCoordinate? {
+        // Currently we don’t check chroma
+        let r = (color.l - self.lightness) / (1.0 - self.lightness)
+        let t = (color.h - 180.0)
+        return if r <= 1.0 { PolarCoordinate(r: r, t: t) } else { nil }
     }
 
     //
