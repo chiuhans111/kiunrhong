@@ -18,9 +18,10 @@ protocol Vector3 {
 
 func * <T: Vector3>(_ lhs: T, _ rhs: Matrix3x3) -> T {
     let vec = lhs.values
-    return .init(vec.0 * rhs.a11 + vec.1 * rhs.a12 + vec.2 * rhs.a13,
-                 vec.0 * rhs.a21 + vec.1 * rhs.a22 + vec.2 * rhs.a23,
-                 vec.0 * rhs.a31 + vec.1 * rhs.a32 + vec.2 * rhs.a33)
+    let m = rhs.values
+    return .init(vec.0 * m.0.0 + vec.1 * m.0.1 + vec.2 * m.0.2,
+                 vec.0 * m.1.0 + vec.1 * m.1.1 + vec.2 * m.1.2,
+                 vec.0 * m.2.0 + vec.1 * m.2.1 + vec.2 * m.2.2)
 }
 
 func * <T: Vector3>(_ lhs: T, _ rhs: Double) -> T {
@@ -48,18 +49,15 @@ extension Vector3 {
 }
 
 struct Matrix3x3 {
-    let a11, a12, a13, a21, a22, a23, a31, a32, a33: Double
+    typealias Row = (Double, Double, Double)
+    let values: (Row, Row, Row)
+
+    init (_ r1: Row, _ r2: Row, _ r3: Row) {
+        self.values = (r1, r2, r3)
+    }
 
     init(_ a11: Double, _ a12: Double, _ a13: Double, _ a21: Double, _ a22: Double, _ a23: Double, _ a31: Double, _ a32: Double, _ a33: Double) {
-        self.a11 = a11
-        self.a12 = a12
-        self.a13 = a13
-        self.a21 = a21
-        self.a22 = a22
-        self.a23 = a23
-        self.a31 = a31
-        self.a32 = a32
-        self.a33 = a33
+        self.values = ((a11, a12, a13), (a21, a22, a23), (a31, a32, a33))
     }
 }
 
