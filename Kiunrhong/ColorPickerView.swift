@@ -42,7 +42,7 @@ class ColorPickerView : NSView {
 
         self.infoTextField = NSTextField(labelWithString: "")
         infoTextField.translatesAutoresizingMaskIntoConstraints = false
-        infoTextField.font = createTabularLabelFont()
+        infoTextField.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.labelFontSize, weight: .regular)
         self.addSubview(infoTextField)
 
         infoTextField.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
@@ -76,7 +76,8 @@ class ColorPickerView : NSView {
 
             let field = NSTextField()
             field.translatesAutoresizingMaskIntoConstraints = false
-            field.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+            field.widthAnchor.constraint(greaterThanOrEqualToConstant: 56).isActive = true
+            field.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
             substack.addView(field, in: .trailing)
 
             let stepper = NSStepper()
@@ -94,20 +95,6 @@ class ColorPickerView : NSView {
 
     required init(coder: NSCoder) {
         fatalError( "init(coder:) has not been implemented" )
-    }
-
-    private func createTabularLabelFont() -> NSFont {
-        let systemFont = NSFont.labelFont(ofSize: NSFont.labelFontSize)
-        let descriptor = NSFontDescriptor(fontAttributes: [
-            .family: systemFont.familyName!,
-            .featureSettings: [
-                [
-                    NSFontDescriptor.FeatureKey.typeIdentifier: kNumberSpacingType,
-                    NSFontDescriptor.FeatureKey.selectorIdentifier: kMonospacedNumbersSelector,
-                ],
-            ]
-        ])
-        return NSFont(descriptor: descriptor, size: systemFont.pointSize)!
     }
 
     override func updateTrackingAreas() {
