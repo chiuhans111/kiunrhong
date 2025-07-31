@@ -13,7 +13,7 @@ class ColorPickerView : NSView {
     var trackingArea: NSTrackingArea?
     var infoTextField: NSTextField!
     var selectionPin: NSImageView!
-    var componentFields: [NSTextField]!
+    var componentFields: [ColorPickerComponent]!
 
     var currentSelection: OKLCHColor? {
         didSet {
@@ -60,36 +60,21 @@ class ColorPickerView : NSView {
         
         componentsStack.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor).isActive = true
         componentsStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+        componentsStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 90).isActive = true
 
         self.componentFields = []
-        for component in "LCH" {
-            let substack = NSStackView()
-            substack.orientation = .horizontal
-            substack.alignment = .firstBaseline
-            substack.spacing = 0
-            substack.distribution = .fill
-            substack.translatesAutoresizingMaskIntoConstraints = false
+        for componentName in "LCH" {
+            let component = ColorPickerComponent(frame: .zero)
+            component.name = String(componentName)
 
-            let label = NSTextField(labelWithString: "\(component): ")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            substack.addView(label, in: .leading)
+            if componentName == "H" {
+                component.setNumberRange(minValue: 0.0, maxValue: 360.0, increment: 0.01)
+            } else {
+                component.setNumberRange(minValue: 0.0, maxValue: 1.0, increment: 0.0001)
+            }
 
-            let field = NSTextField()
-            field.translatesAutoresizingMaskIntoConstraints = false
-            field.widthAnchor.constraint(greaterThanOrEqualToConstant: 56).isActive = true
-            field.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
-            substack.addView(field, in: .trailing)
-
-            let stepper = NSStepper()
-            stepper.translatesAutoresizingMaskIntoConstraints = false
-            stepper.minValue = 0
-            stepper.maxValue = component == "H" ? 360.0 : 1.0
-            stepper.increment = 0.01
-            stepper.target = field
-            substack.addView(stepper, in: .trailing)
-
-            componentsStack.addArrangedSubview(substack)
-            componentFields.append(field)
+            componentsStack.addArrangedSubview(component)
+            componentFields.append(component)
         }
     }
 
@@ -146,7 +131,7 @@ class ColorPickerView : NSView {
 
     private func updateComponentFields(color: OKLCHColor) {
         for case let (value, index) in [(color.a1, 0), (color.a2, 1), (color.a3, 2)] {
-            componentFields[index].stringValue = String(format: "%.4f", value)
+            componentFields[index].setDoubleValue(value)
         }
     }
 
