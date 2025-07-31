@@ -77,6 +77,14 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         return if distance <= 1.0 { (distance, angleInDegrees) } else { nil }
     }
 
+    func colorAtCoordinate(_ coordinate: (r: CGFloat, t: CGFloat)) -> OKLCHColor {
+        // Estimate plotted color
+        let l = self.lightness + (1.0 - self.lightness) * (1.0 - coordinate.r)
+        let c = self.chroma
+        let h = Double(coordinate.t + 360.0).truncatingRemainder(dividingBy: 360.0)
+        return OKLCHColor(l, c, h)
+    }
+
     //
     // Buffer functions
     //

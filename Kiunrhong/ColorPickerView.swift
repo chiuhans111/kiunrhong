@@ -13,9 +13,14 @@ class ColorPickerView : NSView {
     var trackingArea: NSTrackingArea?
     var infoTextField: NSTextField!
     var selectionPin: NSImageView!
+    var componentFields: [NSTextField]!
 
-    var isLocked = false
-    var currentSelection: (Double, Double, Double)?
+    var currentSelection: OKLCHColor? {
+        didSet {
+            // TODO: updatePinLocation()
+            if (currentSelection != nil) { updateComponentFields(color: currentSelection!) }
+        }
+    }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -43,11 +48,48 @@ class ColorPickerView : NSView {
         infoTextField.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
         infoTextField.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor).isActive = true
 
-        let crosshairImage = NSImage(systemSymbolName: "plus", accessibilityDescription: "Crosshair")!
-        self.selectionPin = NSImageView(image: crosshairImage)
+        self.selectionPin = NSImageView(image: NSImage(systemSymbolName: "plus", accessibilityDescription: "Crosshair")!)
         selectionPin.symbolConfiguration = .init(pointSize: 20, weight: .light).applying(.init(paletteColors: [.black]))
         selectionPin.isHidden = true
         self.addSubview(selectionPin)
+
+        let componentsStack = NSStackView()
+        componentsStack.orientation = .vertical
+        componentsStack.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(componentsStack)
+        
+        componentsStack.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor).isActive = true
+        componentsStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+
+        self.componentFields = []
+        for component in "LCH" {
+            let substack = NSStackView()
+            substack.orientation = .horizontal
+            substack.alignment = .firstBaseline
+            substack.spacing = 0
+            substack.distribution = .fill
+            substack.translatesAutoresizingMaskIntoConstraints = false
+
+            let label = NSTextField(labelWithString: "\(component): ")
+            label.translatesAutoresizingMaskIntoConstraints = false
+            substack.addView(label, in: .leading)
+
+            let field = NSTextField()
+            field.translatesAutoresizingMaskIntoConstraints = false
+            field.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+            substack.addView(field, in: .trailing)
+
+            let stepper = NSStepper()
+            stepper.translatesAutoresizingMaskIntoConstraints = false
+            stepper.minValue = 0
+            stepper.maxValue = component == "H" ? 360.0 : 1.0
+            stepper.increment = 0.01
+            stepper.target = field
+            substack.addView(stepper, in: .trailing)
+
+            componentsStack.addArrangedSubview(substack)
+            componentFields.append(field)
+        }
     }
 
     required init(coder: NSCoder) {
@@ -75,9 +117,8 @@ class ColorPickerView : NSView {
         }
 
         // Set the new one in accordance to updated bounds
-        let bounds = self.convert(spectrumView.bounds, from: spectrumView)
-        self.trackingArea = NSTrackingArea(rect: bounds,
-                                           options: [.mouseEnteredAndExited, .mouseMoved, .activeInActiveApp],
+        self.trackingArea = NSTrackingArea(rect: self.bounds,
+                                           options: [.mouseMoved, .activeInActiveApp],
                                            owner: self, userInfo: nil)
         self.addTrackingArea(trackingArea!)
     }
@@ -86,51 +127,61 @@ class ColorPickerView : NSView {
         // Calculate the polar coordinate within the color wheel
         if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
             NSCursor.crosshair.set()
-            if !isLocked { updateSelection(distance: coordinate.r, angleInDegrees: coordinate.t) }
+            let color = spectrumView.colorAtCoordinate(coordinate)
+            updateInfoText(color: color)
         } else {
             // We’re outside of the wheel. Clear everything unless the cursor is locked.
             NSCursor.arrow.set()
-            if !isLocked { clearSelection() }
+            clearInfoText()
         }
     }
 
-    private func updateSelection(distance: Double, angleInDegrees: Double) {
-        // Estimate plotted color
-        let l = spectrumView.lightness + (1.0 - spectrumView.lightness) * (1.0 - distance)
-        let c = spectrumView.chroma
-        let h = Double(angleInDegrees + 360.0).truncatingRemainder(dividingBy: 360.0)
-
-        // Update the view with selection
-        currentSelection = (l, c, h)
-        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", l, c, h)
+    private func updateInfoText(color: OKLCHColor) {
+        infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", color.a1, color.a2, color.a3)
     }
 
-    override func mouseExited(with event: NSEvent) {
-        NSCursor.arrow.set()
-    }
-
-    private func clearSelection() {
+    private func clearInfoText() {
         currentSelection = nil
         infoTextField.stringValue = ""
     }
 
-    override func mouseUp(with event: NSEvent) {
-        if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
-            // We’re within the color wheel. Lock to the new coordinate.
-            isLocked = true
-            updateSelection(distance: coordinate.r, angleInDegrees: coordinate.t)
-
-            // Calculate the pin position and show the crosshair
-            let position = self.convert(event.locationInWindow, from: nil)
+    private func updatePinLocation(_ locationInWindow: NSPoint?) {
+        // TODO: Remove locationInWindow dependency
+        if (currentSelection != nil) {
+            let position = self.convert(locationInWindow!, from: nil)
             let size = selectionPin.image!.size
             selectionPin.setFrameOrigin(.init(x: position.x - size.width / 2, y: position.y - size.height / 2))
             selectionPin.isHidden = false
         } else {
+            selectionPin.isHidden = true
+        }
+    }
+
+    private func updateComponentFields(color: OKLCHColor) {
+        for case let (value, index) in [(color.a1, 0), (color.a2, 1), (color.a3, 2)] {
+            componentFields[index].stringValue = String(format: "%.4f", value)
+        }
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        if let coordinate = spectrumView.calculatePolarCoordinate(from: event.locationInWindow) {
+            // We’re within the color wheel. Calculate the color and update the info text.
+            let color = spectrumView.colorAtCoordinate(coordinate)
+            updateInfoText(color: color)
+
+            // Select the color at the coordinate.
+            self.currentSelection = color
+
+            // Calculate the pin position and show the crosshair.
+            // TODO: Remove this and let didSet do the work
+            updatePinLocation(event.locationInWindow)
+        } else {
             // We’re outside of the view. Unlock (deselect) if needed.
-            if isLocked {
-                isLocked = false
-                clearSelection()
-                selectionPin.isHidden = true
+            if self.currentSelection != nil {
+                self.currentSelection = nil
+
+                // TODO: Remove this and let didSet do the work
+                updatePinLocation(nil)
             }
         }
     }
