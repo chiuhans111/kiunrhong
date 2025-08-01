@@ -113,7 +113,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     func colorAtCoordinate(_ coordinate: PolarCoordinate) -> OKLCHColor {
         // Estimate plotted color
         let l = self.lightness + (1.0 - self.lightness) * (1.0 - coordinate.r)
-        let c = self.chroma
+        let c = self.chroma * coordinate.r
         let h = (180.0 - coordinate.phi).truncatingRemainder(dividingBy: 360.0)
         return OKLCHColor(l, c, h)
     }
