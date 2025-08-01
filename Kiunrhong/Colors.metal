@@ -2,6 +2,8 @@
 //  Colors.metal
 //  Kiunrhong
 //
+// Color conversion functions reimplemented in Metal.
+// Values adapted from W3C CSS Color Module spec.
 //
 
 #include <metal_stdlib>

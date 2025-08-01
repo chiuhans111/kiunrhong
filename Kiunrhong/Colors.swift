@@ -2,6 +2,8 @@
 //  Colors.swift
 //  Kiunrhong
 //
+// Color conversion functions reimplemented in Swift.
+// Values adapted from W3C CSS Color Module spec.
 //
 
 import AppKit
