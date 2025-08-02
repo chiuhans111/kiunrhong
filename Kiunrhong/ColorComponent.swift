@@ -26,18 +26,22 @@ struct ColorComponent {
     // Default is the full range of the color component.
     let practicalRange: ClosedRange<Double>
 
+    /// The traits of the color component.
+    let traits: Traits
+
     //
     // Initializer
     //
 
     /// Creates a new color component with the given properties.
-    init(name: Name = .none, minValue: Double = 0.0, maxValue: Double = 1.0, increment: Double = 0.01, fractionDigits: Int = 4, practicalRange: ClosedRange<Double>? = nil) {
+    init(name: Name = .none, minValue: Double = 0.0, maxValue: Double = 1.0, increment: Double = 0.01, fractionDigits: Int = 4, practicalRange: ClosedRange<Double>? = nil, traits: Traits = []) {
         self.name = name
         self.minValue = minValue
         self.maxValue = maxValue
         self.increment = increment
         self.fractionDigits = fractionDigits
         self.practicalRange = practicalRange ?? minValue...maxValue
+        self.traits = traits
     }
 
     //
@@ -55,6 +59,14 @@ struct ColorComponent {
         case blue
     }
 
+    /// Represents the traits of a color component.
+    struct Traits: OptionSet {
+        let rawValue: Int
+
+        /// Indicates that the component’s value wraps around when it reaches the minimum or maximum value.
+        static let valueWraps = Traits(rawValue: 1 << 0)
+    }
+
     //
     // Static members
     //
@@ -63,10 +75,10 @@ struct ColorComponent {
     static let lightness = ColorComponent(name: .lightness, minValue: 0.0, maxValue: 1.0)
 
     /// The chroma color component of the OKLCH color space.
-    static let chroma = ColorComponent(name: .chroma, minValue: 0.0, maxValue: 0.5, increment: 0.0001, practicalRange: 0.0...0.4)
+    static let chroma = ColorComponent(name: .chroma, minValue: 0.0, maxValue: 0.5, practicalRange: 0.0...0.4)
 
     /// The hue color component of the OKLCH color space.
-    static let hue = ColorComponent(name: .hue, minValue: 0.0, maxValue: 360.0, increment: 1.0, fractionDigits: 2)
+    static let hue = ColorComponent(name: .hue, minValue: 0.0, maxValue: 360.0, increment: 1.0, fractionDigits: 2, traits: .valueWraps)
 
     /// The red color component of the RGB color space.
     static let red = ColorComponent(name: .red, minValue: 0.0, maxValue: 1.0)

@@ -29,6 +29,12 @@ class NumericField: NSView, NSTextFieldDelegate {
         }
     }
 
+    /// Indicates whether the numeric field wraps its value after reaching the boundary.
+    var valueWraps: Bool {
+        get { stepper.valueWraps }
+        set { stepper.valueWraps = newValue }
+    }
+
     /// The internal value of the numeric field. Setting this value will not trigger the `valueDidChange()` method.
     private var _value: Double = 0.0
 
@@ -84,7 +90,7 @@ class NumericField: NSView, NSTextFieldDelegate {
         field.alignment = .right
         field.delegate = self
 
-        stepper.valueWraps = false
+        stepper.valueWraps = false  // Defaults to false
         stepper.target = self
         stepper.action = #selector(onStepperChanged(_:))
     }
