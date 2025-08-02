@@ -6,7 +6,7 @@
 
 import AppKit
 
-class ColorPickerComponent: NSView, NSTextFieldDelegate {
+class NumericField: NSView, NSTextFieldDelegate {
 
     var label: NSTextField!
     var field: NSTextField!
@@ -17,6 +17,8 @@ class ColorPickerComponent: NSView, NSTextFieldDelegate {
     var maxValue: Double = 1.0
     var increment: Double = 0.01
     var doubleValue: Double = 0.0
+
+    var delegate: NumericFieldDelegate?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -103,10 +105,18 @@ class ColorPickerComponent: NSView, NSTextFieldDelegate {
     func onStepperChanged(_: NSStepper) {
         self.doubleValue = stepper.doubleValue
         valueDidSet()
+        self.delegate?.numericFieldValueDidChange(self)
     }
 
     func controlTextDidChange(_ obj: Notification) {
         self.doubleValue = field.doubleValue
         valueDidSet()
+        self.delegate?.numericFieldValueDidChange(self)
     }
+}
+
+protocol NumericFieldDelegate {
+
+    func numericFieldValueDidChange(_ numericField: NumericField)
+
 }

@@ -12,9 +12,10 @@ class ColorPickerView : NSView {
     var spectrumView: ColorSpectrumView!
     var infoTextField: NSTextField!
     var selectionPin: NSImageView!
-    var componentFields: [ColorPickerComponent]!
+    var componentStack: NSStackView!
 
-    var currentSelection: OKLCHColor?
+    var componentDelegate: NumericFieldDelegate?
+    var components: [ColorComponent.Name: NumericField] = [:]
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -47,32 +48,30 @@ class ColorPickerView : NSView {
         selectionPin.isHidden = true
         self.addSubview(selectionPin)
 
-        let componentsStack = NSStackView()
-        componentsStack.orientation = .vertical
-        componentsStack.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(componentsStack)
-        
-        componentsStack.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor).isActive = true
-        componentsStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
-        componentsStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 90).isActive = true
+        self.componentStack = NSStackView()
+        componentStack.orientation = .vertical
+        componentStack.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(componentStack)
 
-        self.componentFields = []
-        for componentName in "LCH" {
-            let component = ColorPickerComponent(frame: .zero)
-            component.name = String(componentName)
-
-            if componentName == "H" {
-                component.setNumberRange(minValue: 0.0, maxValue: 360.0, increment: 0.01)
-            } else {
-                component.setNumberRange(minValue: 0.0, maxValue: 1.0, increment: 0.0001)
-            }
-
-            componentsStack.addArrangedSubview(component)
-            componentFields.append(component)
-        }
+        componentStack.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor).isActive = true
+        componentStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+        componentStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 90).isActive = true
     }
 
     required init(coder: NSCoder) {
         fatalError( "init(coder:) has not been implemented" )
+    }
+
+    //
+    // View functions
+    //
+
+    func addColorComponent(_ component: ColorComponent, withLabel label: String) {
+        let field = NumericField(frame: .zero)
+        field.name = label
+        field.setNumberRange(minValue: component.minValue, maxValue: component.maxValue, increment: component.increment)
+        field.delegate = self.componentDelegate
+        components[component.name] = field
+        componentStack.addArrangedSubview(field)
     }
 }
