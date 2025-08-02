@@ -15,56 +15,42 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.spectrumView.parentDelegate = self
     }
 
-    func colorSpectrum(_: ColorSpectrumView, mouseEvent event: NSEvent) {
-        guard let coordinate = this.spectrumView.pointToPolarCoordinate(from: event.locationInWindow) else {
-            NSCursor.arrow.set()    // We’re outside of the wheel. Clear everything.
-            this.infoTextField.stringValue = ""
-            return
-        }
-
-        // Set the current cursor as crosshair
-        NSCursor.crosshair.set()
-
-        // Calculate the color and update the info text.
-        let color = this.spectrumView.colorAtCoordinate(coordinate)
+    func colorSpectrum(_: ColorSpectrumView, mouseDidMove event: ColorSpectrumViewEvent) {
+        let color = event.color!
         this.infoTextField.stringValue = String(format: "L: %.4f\nC: %.4f\nH: %.2f", color.l, color.c, color.h)
-
-        switch event.type {
-        case .leftMouseDown, .leftMouseDragged, .leftMouseUp:
-            // Select the color at the coordinate.
-            let location = this.convert(event.locationInWindow, from: nil)
-            setCurrentSelection(color, at: location)
-        default: break
-        }
     }
 
-    func setCurrentSelection(_ color: OKLCHColor?, at location: CGPoint? = nil) {
+    func colorSpectrum(_: ColorSpectrumView, mouseDidLeave event: ColorSpectrumViewEvent) {
+        this.infoTextField.stringValue = ""
+    }
+
+    func colorSpectrum(_: ColorSpectrumView, didSelectColor color: OKLCHColor) {
+        setCurrentSelection(color)
+    }
+
+    func setCurrentSelection(_ color: OKLCHColor?) {
         self.currentSelection = color
         if (color != nil) {
             updateComponentFields()
-            updatePinLocation(location: location)
+            updatePinLocation()
         } else {
             clearPinLocation()
         }
     }
 
-    private func updatePinLocation(location: CGPoint? = nil) {
-        // Calculate the pin position if not provided
-        var position: CGPoint
-        if location != nil {
-            position = location!
-        } else {
-            let polarCoord = this.spectrumView.colorToCoordinate(self.currentSelection!)
-            let viewCoord = this.spectrumView.pointFromPolarCoordinate(polarCoord!)
-            position = this.convert(viewCoord, from: this.spectrumView)
-        }
+    private func updatePinLocation() {
+        // Calculate the pin position
+        let color = self.currentSelection!
+        let polarCoord = this.spectrumView.colorToCoordinate(color)
+        let viewCoord = this.spectrumView.pointFromPolarCoordinate(polarCoord!)
 
+        let position = this.convert(viewCoord, from: this.spectrumView)
         let size = this.selectionPin.image!.size
         this.selectionPin.setFrameOrigin(.init(x: position.x - size.width / 2, y: position.y - size.height / 2))
         this.selectionPin.isHidden = false
     }
 
-    func clearPinLocation() {
+    private func clearPinLocation() {
         this.selectionPin.isHidden = true
     }
 

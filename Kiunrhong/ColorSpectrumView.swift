@@ -67,7 +67,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
         // TODO: Validates if `event` will ever be `nil`
         let coord = pointToPolarCoordinate(from: event!.locationInWindow)
-        return coord != nil && coord!.r <= 1.0   // Only responds to the event if it’s within the circle
+        return coord != nil   // Only responds to the event if it’s within the circle
     }
 
     override func updateTrackingAreas() {
@@ -78,29 +78,41 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
         // Set the new one in accordance to updated bounds
         let trackingArea = NSTrackingArea(rect: self.bounds,
-                                          options: [.mouseMoved, .mouseEnteredAndExited, .activeInActiveApp],
+                                          options: [.mouseMoved, .cursorUpdate, .activeInActiveApp],
                                           owner: self, userInfo: nil)
         self.addTrackingArea(trackingArea)
     }
 
-    override func mouseEntered(with event: NSEvent) {
-        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
+    override func cursorUpdate(with event: NSEvent) {
+        if let coord = pointToPolarCoordinate(from: event.locationInWindow) {
+            NSCursor.crosshair.set()    // Only set crosshair cursor when we’re within the circle
+            self.parentDelegate?.colorSpectrum(self, mouseDidMove: .init(coordinate: coord, mouseEvent: event, color: colorAtCoordinate(coord)))
+        } else {
+            NSCursor.arrow.set()    // Reset cursor state
+            self.parentDelegate?.colorSpectrum(self, mouseDidLeave: .init(mouseEvent: event))
+        }
     }
 
     override func mouseMoved(with event: NSEvent) {
-        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
+        if let coord = pointToPolarCoordinate(from: event.locationInWindow) {
+            self.parentDelegate?.colorSpectrum(self, mouseDidMove: .init(coordinate: coord, mouseEvent: event, color: colorAtCoordinate(coord)))
+        }
     }
 
     override func mouseDown(with event: NSEvent) {
-        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
-    }
-
-    override func mouseUp(with event: NSEvent) {
-        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
+        if let coord = pointToPolarCoordinate(from: event.locationInWindow) {
+            let color = colorAtCoordinate(coord)
+            self.parentDelegate?.colorSpectrum(self, mouseDidMove: .init(coordinate: coord, mouseEvent: event, color: color))
+            self.parentDelegate?.colorSpectrum(self, didSelectColor: color)
+        }
     }
 
     override func mouseDragged(with event: NSEvent) {
-        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
+        if let coord = pointToPolarCoordinate(from: event.locationInWindow) {
+            let color = colorAtCoordinate(coord)
+            self.parentDelegate?.colorSpectrum(self, mouseDidMove: .init(coordinate: coord, mouseEvent: event, color: color))
+            self.parentDelegate?.colorSpectrum(self, didSelectColor: color)
+        }
     }
 
     //
@@ -125,9 +137,8 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     }
 
     func colorToCoordinate(_ color: OKLCHColor) -> PolarCoordinate? {
-        // Currently we don’t check chroma
-        let r = (color.l - self.lightness) / (1.0 - self.lightness)
-        let t = (color.h - 180.0) / 180.0 * .pi
+        let r = (1.0 - (color.l - self.lightness) / (1.0 - self.lightness))
+        let t = (180.0 - color.h) / 180.0 * .pi
         return if r <= 1.0 { PolarCoordinate(r, t) } else { nil }
     }
 
@@ -207,7 +218,23 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
 protocol ColorSpectrumViewDelegate {
 
-    func colorSpectrum(_ sender: ColorSpectrumView, mouseEvent event: NSEvent)
+    func colorSpectrum(_ sender: ColorSpectrumView, mouseDidMove event: ColorSpectrumViewEvent)
+
+    func colorSpectrum(_ sender: ColorSpectrumView, mouseDidLeave event: ColorSpectrumViewEvent)
+
+    func colorSpectrum(_ sender: ColorSpectrumView, didSelectColor color: OKLCHColor)
 
 }
 
+struct ColorSpectrumViewEvent {
+
+    let coordinate: PolarCoordinate?
+    let mouseEvent: NSEvent?
+    let color: OKLCHColor?
+
+    init(coordinate: PolarCoordinate? = nil, mouseEvent: NSEvent? = nil, color: OKLCHColor? = nil) {
+        self.coordinate = coordinate
+        self.mouseEvent = mouseEvent
+        self.color = color
+    }
+}
