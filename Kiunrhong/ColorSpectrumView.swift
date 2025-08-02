@@ -18,7 +18,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     var lightness = 0.6
     var chroma = 0.168
 
-    var target: (any ColorSpectrumViewDelegate)?
+    var parentDelegate: (any ColorSpectrumViewDelegate)?
 
     init(frame frameRect: NSRect) {
         let device = MTLCreateSystemDefaultDevice()!
@@ -64,6 +64,12 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     // UI functions
     //
 
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        // TODO: Validates if `event` will ever be `nil`
+        let coord = pointToPolarCoordinate(from: event!.locationInWindow)
+        return coord != nil && coord!.r <= 1.0   // Only responds to the event if it’s within the circle
+    }
+
     override func updateTrackingAreas() {
         // Remove the existing one if exists
         if self.trackingAreas.count > 0 {
@@ -78,23 +84,23 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     }
 
     override func mouseEntered(with event: NSEvent) {
-        self.target?.colorSpectrumMouseEvent(self, with: event)
+        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
     }
 
     override func mouseMoved(with event: NSEvent) {
-        self.target?.colorSpectrumMouseEvent(self, with: event)
+        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
     }
 
     override func mouseDown(with event: NSEvent) {
-        self.target?.colorSpectrumMouseEvent(self, with: event)
+        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
     }
 
     override func mouseUp(with event: NSEvent) {
-        self.target?.colorSpectrumMouseEvent(self, with: event)
+        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
     }
 
     override func mouseDragged(with event: NSEvent) {
-        self.target?.colorSpectrumMouseEvent(self, with: event)
+        self.parentDelegate?.colorSpectrum(self, mouseEvent: event)
     }
 
     //
@@ -199,8 +205,9 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     }
 }
 
-protocol ColorSpectrumViewDelegate : NSObjectProtocol {
+protocol ColorSpectrumViewDelegate {
 
-    func colorSpectrumMouseEvent(_ sender: ColorSpectrumView, with event: NSEvent)
+    func colorSpectrum(_ sender: ColorSpectrumView, mouseEvent event: NSEvent)
 
 }
+

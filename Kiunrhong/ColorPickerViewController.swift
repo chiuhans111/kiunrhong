@@ -12,10 +12,10 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        this.spectrumView.target = self
+        this.spectrumView.parentDelegate = self
     }
 
-    func colorSpectrumMouseEvent(_: ColorSpectrumView, with event: NSEvent) {
+    func colorSpectrum(_: ColorSpectrumView, mouseEvent event: NSEvent) {
         guard let coordinate = this.spectrumView.pointToPolarCoordinate(from: event.locationInWindow) else {
             NSCursor.arrow.set()    // We’re outside of the wheel. Clear everything.
             this.infoTextField.stringValue = ""
