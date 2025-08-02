@@ -69,7 +69,11 @@ class ColorPickerView : NSView {
     func addColorComponent(_ component: ColorComponent, withLabel label: String) {
         let field = NumericField(frame: .zero)
         field.name = label
-        field.setNumberRange(minValue: component.minValue, maxValue: component.maxValue, increment: component.increment)
+        field.minValue = component.minValue
+        field.maxValue = component.maxValue
+        field.increment = component.increment
+        field.maximumFractionDigits = component.fractionDigits
+        field.numberRangeDidChange()
         field.delegate = self.componentDelegate
         components[component.name] = field
         componentStack.addArrangedSubview(field)

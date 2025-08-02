@@ -16,11 +16,11 @@ struct ColorComponent {
     /// The maximum value of the color component.
     let maxValue: Double
 
-    /// The suggested increment value of the color component. Formatters may use this value to round the color component value.
+    /// The suggested increment value of the color component.
     let increment: Double
 
-    /// The unit of the color component. Default is `none`.
-    let unit: Unit
+    /// The number of digits to round the color component value to.
+    let fractionDigits: Int
 
     /// The practical range of the color component for the user. Some controls may choose to clip their values to this range.
     // Default is the full range of the color component.
@@ -31,24 +31,18 @@ struct ColorComponent {
     //
 
     /// Creates a new color component with the given properties.
-    init(name: Name = .none, minValue: Double = 0.0, maxValue: Double = 1.0, increment: Double = 0.0001, unit: Unit = .none, practicalRange: ClosedRange<Double>? = nil) {
+    init(name: Name = .none, minValue: Double = 0.0, maxValue: Double = 1.0, increment: Double = 0.01, fractionDigits: Int = 4, practicalRange: ClosedRange<Double>? = nil) {
         self.name = name
         self.minValue = minValue
         self.maxValue = maxValue
         self.increment = increment
-        self.unit = unit
+        self.fractionDigits = fractionDigits
         self.practicalRange = practicalRange ?? minValue...maxValue
     }
 
     //
     // Nested types
     //
-
-    /// Represents the unit of a color component.
-    enum Unit {
-        case none
-        case degree
-    }
 
     /// Represents the name of a color component.
     enum Name {
@@ -65,15 +59,21 @@ struct ColorComponent {
     // Static members
     //
 
-    static let lightness = ColorComponent(name: .lightness, minValue: 0.0, maxValue: 1.0, increment: 0.0001)
+    /// The lightness color component of the OKLCH color space.
+    static let lightness = ColorComponent(name: .lightness, minValue: 0.0, maxValue: 1.0)
 
+    /// The chroma color component of the OKLCH color space.
     static let chroma = ColorComponent(name: .chroma, minValue: 0.0, maxValue: 0.5, increment: 0.0001, practicalRange: 0.0...0.4)
 
-    static let hue = ColorComponent(name: .hue, minValue: 0.0, maxValue: 360.0, increment: 0.01, unit: .degree)
+    /// The hue color component of the OKLCH color space.
+    static let hue = ColorComponent(name: .hue, minValue: 0.0, maxValue: 360.0, increment: 1.0, fractionDigits: 2)
 
-    static let red = ColorComponent(name: .red, minValue: 0.0, maxValue: 1.0, increment: 0.0001)
+    /// The red color component of the RGB color space.
+    static let red = ColorComponent(name: .red, minValue: 0.0, maxValue: 1.0)
 
-    static let green = ColorComponent(name: .green, minValue: 0.0, maxValue: 1.0, increment: 0.0001)
+    /// The green color component of the RGB color space.
+    static let green = ColorComponent(name: .green, minValue: 0.0, maxValue: 1.0)
 
-    static let blue = ColorComponent(name: .blue, minValue: 0.0, maxValue: 1.0, increment: 0.0001)
+    /// The blue color component of the RGB color space.
+    static let blue = ColorComponent(name: .blue, minValue: 0.0, maxValue: 1.0)
 }

@@ -64,9 +64,9 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
 
     private func updateComponentFields() {
         let color = self.currentSelection!
-        this.components[.lightness]!.setDoubleValue(color.l)
-        this.components[.chroma]!.setDoubleValue(color.c)
-        this.components[.hue]!.setDoubleValue(color.h)
+        this.components[.lightness]!.doubleValue = color.l
+        this.components[.chroma]!.doubleValue = color.c
+        this.components[.hue]!.doubleValue = color.h
     }
 }
 
