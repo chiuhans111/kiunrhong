@@ -68,6 +68,7 @@ class ColorPickerView : NSView {
 
     func addColorComponent(_ component: ColorComponent, withLabel label: String) {
         let field = NumericField(frame: .zero)
+        field.tag = component.name.rawValue
         field.name = label
         field.valueWraps = component.traits.contains(.valueWraps)
         field.delegate = self.componentDelegate

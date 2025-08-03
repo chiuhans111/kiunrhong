@@ -57,6 +57,15 @@ class NumericField: NSView, NSTextFieldDelegate {
     /// The delegate of the numeric field to handle its events.
     var delegate: NumericFieldDelegate?
 
+    /// The internal tag value of the numeric field. Use the `tag` property instead.
+    private var _tag: Int = -1
+
+    /// The tag of the numeric field to identify itself.
+    override var tag: Int {
+        get { _tag }
+        set { _tag = newValue }
+    }
+
     /// Creates a new numeric field.
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)

@@ -22,9 +22,12 @@ struct OKLCHColor: Vector3 {
 
     /// Relative lightness for the construction of OKLrCH.
     var relativeLightness: Double {
-        let k1 = 0.206, k2 = 0.03, k3 = (1.0 + k1) / (1.0 + k2)
-        return ((k3 * l - k1) + sqrt((k3 * l - k1) * (k3 * l - k1) + 4 * k2 * k3 * l)) / 2
+        let k3_l = (1 + 0.206) / (1 + 0.03) * self.l
+        let dk = k3_l - 0.206
+        return (dk + sqrt(dk * dk + 4 * 0.03 * k3_l)) / 2.0
     }
+
+    static let chromaEpsilon: Double = 0.000004
 
     static let oklabToLMS = Matrix3x3(
         (1.0,  0.3963377773761749,  0.2158037573099136),

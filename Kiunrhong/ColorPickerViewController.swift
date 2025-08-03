@@ -58,10 +58,18 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
     }
 
     func numericFieldValueDidChange(_ numericField: NumericField) {
-        let color = OKLCHColor(
-            this.components[.lightness]!.doubleValue,
-            this.components[.chroma]!.doubleValue,
-            this.components[.hue]!.doubleValue)
+        let componentName = ColorComponent.Name(rawValue: numericField.tag)!
+        let color = if [.lightness, .chroma, .hue].contains(componentName) {
+            OKLCHColor(
+                this.components[.lightness]!.doubleValue,
+                this.components[.chroma]!.doubleValue,
+                this.components[.hue]!.doubleValue)
+        } else {
+            RGBColor(
+                this.components[.red]!.doubleValue,
+                this.components[.green]!.doubleValue,
+                this.components[.blue]!.doubleValue).toXYZ().toOKLCH()
+        }
         self.setCurrentSelection(color)
     }
 

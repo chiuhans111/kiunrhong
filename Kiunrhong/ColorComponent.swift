@@ -49,7 +49,7 @@ struct ColorComponent {
     //
 
     /// Represents the name of a color component.
-    enum Name {
+    enum Name: Int {
         case none
         case lightness
         case chroma
