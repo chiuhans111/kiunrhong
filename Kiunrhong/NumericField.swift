@@ -88,6 +88,7 @@ class NumericField: NSView, NSTextFieldDelegate {
         numberRangeDidChange() // Sets the initial number range and formatters
 
         field.alignment = .right
+        field.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize(for: field.controlSize), weight: .regular)
         field.delegate = self
 
         stepper.valueWraps = false  // Defaults to false
