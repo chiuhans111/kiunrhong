@@ -36,11 +36,6 @@ struct RGBColor: Vector3 {
         ( 35783.0 /  156275.0, 247089.0 / 357200.0,  198249.0 / 2500400.0),
         (                 0.0,  32229.0 / 714400.0, 5220557.0 / 5000800.0))
 
-    static let linearP3ToLMS = Matrix3x3(
-        (0.416824767557822555, 0.475351411721278402, 0.072476362624527795),
-        (0.21417119039362985 , 0.746641585179797014, 0.045725892380013252),
-        (0.051782309716409436, 0.317774644257499771, 0.663019296095342912))
-
     /// Return a new color with sRGB gamma correction applied.
     func gammaCorrected() -> RGBColor {
         self.map { i in
@@ -84,13 +79,8 @@ struct RGBColor: Vector3 {
         (self.linearized() * RGBColor.linearP3toXYZ).cast()
     }
 
-    /// Convert the color to LMS color space. The color is assumed to be in the Display P3 color space.
-    func toLMS() -> LMSColor {
-        (self.linearized() * RGBColor.linearP3ToLMS).cast()
-    }
-
     /// Convenience function to convert a Display P3 color to OKLCH color space.
     func toOKLCH() -> OKLCHColor {
-        self.toLMS().toOKLab().toOKLCH()
+        self.toXYZ().toOKLab().toOKLCH()
     }
 }

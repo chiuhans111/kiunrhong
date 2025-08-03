@@ -42,9 +42,4 @@ struct XYZColor: Vector3 {
     func toRec2020() -> RGBColor {
         ((self * XYZColor.xyzToLinearRec2020).cast() as RGBColor).gammaCorrectedInRec2020()
     }
-
-    /// Convert the XYZ color to LMS color space.
-    func toLMS() -> LMSColor {
-        (self * XYZColor.xyzToLMS).cast()
-    }
 }

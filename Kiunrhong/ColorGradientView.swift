@@ -8,10 +8,10 @@ import AppKit
 class ColorGradientView : NSView {
 
     override func draw(_ dirtyRect: NSRect) {
-        let c1 = OKLCHColor(0.8647, 0.3398, 141.88).toOKLab().toLMS().toXYZ()
-        let c2 = OKLCHColor(0.7133, 0.3478, 331.41).toOKLab().toLMS().toXYZ()    // These two colors are only available in P3 space
-        let c3 = OKLCHColor(0.8325, 0.46, 152.1).toOKLab().toLMS().toXYZ()
-        let c4 = OKLCHColor(0.742, 0.4205, 337).toOKLab().toLMS().toXYZ()        // These two colors are only available in Rec2020 space
+        let c1 = OKLCHColor(0.8647, 0.3398, 141.88).toOKLab().toXYZ()
+        let c2 = OKLCHColor(0.7133, 0.3478, 331.41).toOKLab().toXYZ()    // These two colors are only available in P3 space
+        let c3 = OKLCHColor(0.8325, 0.46, 152.1).toOKLab().toXYZ()
+        let c4 = OKLCHColor(0.742, 0.4205, 337).toOKLab().toXYZ()        // These two colors are only available in Rec2020 space
 
         let displayP3 = CGColorSpace(name: CGColorSpace.displayP3)!
         let rec2020 = CGColorSpace(name: CGColorSpace.itur_2020)!

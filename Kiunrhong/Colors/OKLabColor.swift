@@ -34,14 +34,24 @@ struct OKLabColor: Vector3 {
         (1.0, -0.10556134581565857, -0.0638541728258133 ),
         (1.0, -0.08948417752981186, -1.2914855480194092 ))
 
+    static let lmsToXYZ = Matrix3x3(
+        ( 1.226879875845924,   -0.5578149944602171,   0.2813910456659647),
+        (-0.04057574521480083,  1.112286803280317,   -0.07171105806551635),
+        (-0.07637293667466008, -0.42149333240224324,  1.5869240198367818))
+
+    static let xyzToLMS = Matrix3x3(
+        (0.8190224379967030, 0.3619062600528904, -0.1288737815209879),
+        (0.0329836539323885, 0.9292868615863434,  0.0361446663506424),
+        (0.0481771893596242, 0.2642395317527308,  0.6335478284694309))
+
     static let lms3ToOKLab = Matrix3x3(
         (0.21045426830931396,   0.7936177747023053, -0.0040720430116192585),
         (1.9779985324311686,   -2.42859224204858,    0.450593709617411),
         (0.025904042465547734,  0.7827717124575297, -0.8086757549230774))
 
-    /// Convert the OKLab color to an LMS color.
-    func toLMS() -> LMSColor {
-        (self * OKLabColor.oklabToLMS3).cast() ** 3
+    /// Convert the OKLab color to an XYZ color.
+    func toXYZ() -> XYZColor {
+        ((self * OKLabColor.oklabToLMS3).cast() ** 3) * OKLabColor.lmsToXYZ
     }
 
     /// Convert the OKLab color to OKLCH representation. The color space remains unchanged.
@@ -53,9 +63,9 @@ struct OKLabColor: Vector3 {
     }
 }
 
-extension LMSColor {
-    /// Convert the LMS color to the OKLab color space.
+extension XYZColor {
+    /// Convert the XYZ color to the OKLab color space.
     func toOKLab() -> OKLabColor {
-        self.map(cbrt) * OKLabColor.lms3ToOKLab
+        (self * OKLabColor.xyzToLMS).map(cbrt) * OKLabColor.lms3ToOKLab
     }
 }
