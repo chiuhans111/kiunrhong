@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Represents a color in the OKLCH color space.
 struct OKLCHColor: Vector3 {
 
     let l, c, h: Double
@@ -17,6 +18,12 @@ struct OKLCHColor: Vector3 {
         self.l = l
         self.c = c
         self.h = h
+    }
+
+    /// Relative lightness for the construction of OKLrCH.
+    var relativeLightness: Double {
+        let k1 = 0.206, k2 = 0.03, k3 = (1.0 + k1) / (1.0 + k2)
+        return ((k3 * l - k1) + sqrt((k3 * l - k1) * (k3 * l - k1) + 4 * k2 * k3 * l)) / 2
     }
 
     static let oklabToLMS = Matrix3x3(
@@ -29,6 +36,7 @@ struct OKLCHColor: Vector3 {
         (-0.0405757452148008,  1.1122868032803170, -0.0717110580655164),
         (-0.0763729366746601, -0.4214933324022432,  1.5869240198367816))
 
+    /// Converts the OKLCH color to an XYZ color.
     func toXYZ() -> XYZColor {
         // We don’t create a separate type for OKLab color as it’s largely intermediary.
         let oklab = GenericColor(/* l: */ self.l,

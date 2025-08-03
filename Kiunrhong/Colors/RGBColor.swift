@@ -9,6 +9,7 @@
 import AppKit
 import CoreGraphics
 
+/// Represents a color in the RGB color space.
 struct RGBColor: Vector3 {
 
     let r, g, b: Double
@@ -20,12 +21,12 @@ struct RGBColor: Vector3 {
         self.b = b
     }
 
-    /// Creates a Display P3 color from the values.
-    func toDisplayP3Color(alpha: CGFloat = 1.0) -> NSColor {
+    /// Create a Display P3 color from the values.
+    func toNSColorInDisplayP3(alpha: CGFloat = 1.0) -> NSColor {
         return .init(displayP3Red: self.r, green: self.g, blue: self.b, alpha: alpha)
     }
 
-    /// Creates a `CoreGraphics` color from the values, with the specified `CGColorSpace`.
+    /// Create a `CoreGraphics` color from the values, with the specified `CGColorSpace`.
     func toCGColor(withColorSpace colorSpace: CGColorSpace, alpha: CGFloat = 1.0) -> CGColor? {
         return .init(colorSpace: colorSpace, components: [self.r, self.g, self.b, alpha])
     }

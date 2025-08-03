@@ -21,12 +21,12 @@ class ColorGradientView : NSView {
              NSColor(cgColor: c2.toRec2020().toCGColor(withColorSpace: rec2020)!)!), // P3-only color to Rec2020
             (NSColor(cgColor: c1.toDisplayP3().toCGColor(withColorSpace: displayP3)!)!,
              NSColor(cgColor: c2.toDisplayP3().toCGColor(withColorSpace: displayP3)!)!),  // P3-only color to P3
-            (c1.toDisplayP3().toDisplayP3Color(),
-             c2.toDisplayP3().toDisplayP3Color()), // P3-only color to P3
+            (c1.toDisplayP3().toNSColorInDisplayP3(),
+             c2.toDisplayP3().toNSColorInDisplayP3()), // P3-only color to P3
             (NSColor(displayP3Red: 0.3818, green: 0.9995, blue: 0.0311, alpha: 1.0),
              NSColor(displayP3Red: 0.973, green: 0.0835, blue: 0.9733, alpha: 1.0)), // P3-only color comparison
-            (c3.toDisplayP3().toDisplayP3Color(),
-             c4.toDisplayP3().toDisplayP3Color()), // Rec2020-only color to P3
+            (c3.toDisplayP3().toNSColorInDisplayP3(),
+             c4.toDisplayP3().toNSColorInDisplayP3()), // Rec2020-only color to P3
             (NSColor(cgColor: c3.toRec2020().toCGColor(withColorSpace: rec2020)!)!,
              NSColor(cgColor: c4.toRec2020().toCGColor(withColorSpace: rec2020)!)!), // Rec2020-only color to Rec2020
         ]

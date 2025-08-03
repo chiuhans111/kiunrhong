@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Represents a color in the XYZ color space.
 struct XYZColor: Vector3 {
 
     let x, y, z: Double
