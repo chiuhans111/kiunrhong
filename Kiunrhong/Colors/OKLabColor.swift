@@ -3,7 +3,6 @@
 //  Kiunrhong
 //
 // Color conversion functions reimplemented in Swift.
-// Values adapted from W3C CSS Color Module spec.
 //
 
 import Foundation
@@ -30,19 +29,19 @@ struct OKLabColor: Vector3 {
     /// Minimum effective chroma.
     static let chromaEpsilon: Double = 0.000004
 
-    static let oklabToLMS_ = Matrix3x3(
-        (1.0,  0.3963377773761749,  0.2158037573099136),
-        (1.0, -0.1055613458156586, -0.0638541728258133),
-        (1.0, -0.0894841775298119, -1.2914855480194092))
+    static let oklabToLMS3 = Matrix3x3(
+        (1.0,  0.3963377773761749,   0.21580375730991364),
+        (1.0, -0.10556134581565857, -0.0638541728258133 ),
+        (1.0, -0.08948417752981186, -1.2914855480194092 ))
 
-    static let lms_ToOKLab = Matrix3x3(
-        (0.2104542683093140,  0.7936177747023054, -0.0040720430116193),
-        (1.9779985324311684, -2.4285922420485799,  0.4505937096174110),
-        (0.0259040424655478,  0.7827717124575296, -0.8086757549230774))
+    static let lms3ToOKLab = Matrix3x3(
+        (0.21045426830931396,   0.7936177747023053, -0.0040720430116192585),
+        (1.9779985324311686,   -2.42859224204858,    0.450593709617411),
+        (0.025904042465547734,  0.7827717124575297, -0.8086757549230774))
 
     /// Convert the OKLab color to an LMS color.
     func toLMS() -> LMSColor {
-        (self * OKLabColor.oklabToLMS_).cast() ** 3
+        (self * OKLabColor.oklabToLMS3).cast() ** 3
     }
 
     /// Convert the OKLab color to OKLCH representation. The color space remains unchanged.
@@ -57,6 +56,6 @@ struct OKLabColor: Vector3 {
 extension LMSColor {
     /// Convert the LMS color to the OKLab color space.
     func toOKLab() -> OKLabColor {
-        self.map(cbrt) * OKLabColor.lms_ToOKLab
+        self.map(cbrt) * OKLabColor.lms3ToOKLab
     }
 }
