@@ -68,7 +68,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
             RGBColor(
                 this.components[.red]!.doubleValue,
                 this.components[.green]!.doubleValue,
-                this.components[.blue]!.doubleValue).toXYZ().toOKLCH()
+                this.components[.blue]!.doubleValue).toOKLCH()
         }
         self.setCurrentSelection(color)
     }
@@ -81,7 +81,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
 
         // Convert the color to other color spaces.
         // Note that we don’t need to create an actual `CGColor` as plain vector shall suffice.
-        let rgb = color.toXYZ().toDisplayP3()
+        let rgb = color.toDisplayP3()
         this.components[.red]!.doubleValue = rgb.r
         this.components[.green]!.doubleValue = rgb.g
         this.components[.blue]!.doubleValue = rgb.b
