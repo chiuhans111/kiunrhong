@@ -45,10 +45,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
-        return true
-    }
-
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()

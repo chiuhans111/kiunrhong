@@ -101,6 +101,7 @@ class NumericField: NSView, NSTextFieldDelegate {
         field.delegate = self
 
         stepper.valueWraps = false  // Defaults to false
+        stepper.refusesFirstResponder = true
         stepper.target = self
         stepper.action = #selector(onStepperChanged(_:))
     }
@@ -147,6 +148,18 @@ class NumericField: NSView, NSTextFieldDelegate {
     func controlTextDidChange(_ obj: Notification) {
         self.doubleValue = field.doubleValue
         self.delegate?.numericFieldValueDidChange(self)
+    }
+
+    func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+        switch commandSelector {
+        case #selector(moveUp):
+            self.stepper.moveUp(self)
+        case #selector(moveDown):
+            self.stepper.moveDown(self)
+        default:
+            return false
+        }
+        return true
     }
 }
 
