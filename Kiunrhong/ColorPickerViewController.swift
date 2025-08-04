@@ -24,6 +24,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.addColorComponent(.blue, withLabel: "B")
 
         // Hook up tool buttons
+        this.addToolButton(withSystemSymbolName: "dice", title: "Randomize!", target: self, action: #selector(randomizeButtonClicked))
         this.addToolButton(withSystemSymbolName: "doc.on.doc", title: "Copy Color Value", target: self, action: #selector(copyButtonClicked))
     }
 
@@ -75,7 +76,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
                 this.components[.green]!.doubleValue,
                 this.components[.blue]!.doubleValue).toOKLCH()
         }
-        self.setCurrentSelection(color)
+        setCurrentSelection(color)
     }
 
     private func updateComponentFields() {
@@ -101,6 +102,21 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         let clipboard = NSPasteboard.general
         clipboard.declareTypes([.color, .string], owner: nil)
         clipboard.writeObjects([nsColor, serializedString])
+    }
+
+    @objc
+    func randomizeButtonClicked(_ sender: NSButton) {
+        let color = OKLCHColor(
+            Double.random(in: ColorComponent.lightness.practicalRange),
+            Double.random(in: ColorComponent.chroma.practicalRange),
+            Double.random(in: ColorComponent.hue.practicalRange))
+        setCurrentSelection(color)
+
+        // Have some fun on the buttons
+        var dieRoll = Int.random(in: 1...6)
+        if dieRoll == sender.tag { dieRoll += 1 }
+        sender.tag = dieRoll
+        sender.image = NSImage(systemSymbolName: dieRoll > 6 ? "dice" : "die.face.\(dieRoll)", accessibilityDescription: sender.accessibilityLabel())
     }
 }
 
