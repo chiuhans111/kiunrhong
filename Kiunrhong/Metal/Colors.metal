@@ -9,27 +9,26 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constant float3x3 oklab_to_lms = {{1.0,  0.3963377773761749,  0.2158037573099136},
-                                  {1.0, -0.1055613458156586, -0.0638541728258133},
-                                  {1.0, -0.0894841775298119, -1.2914855480194092}};
+constant float3x3 oklab_to_lms_cbrt = {
+    { 1.0,  0.3963377773761749,  0.2158037573099136 },
+    { 1.0, -0.1055613458156586, -0.0638541728258133 },
+    { 1.0, -0.0894841775298119, -1.2914855480194092 }};
 
-constant float3x3 lms3_to_xyz = {{ 1.2268798758459243, -0.5578149944602171,  0.2813910456659647},
-                                 {-0.0405757452148008,  1.1122868032803170, -0.0717110580655164},
-                                 {-0.0763729366746601, -0.4214933324022432,  1.5869240198367816}};
-
-constant float3x3 xyz_to_linear_p3 = {{446124.0 / 178915.0, -333277.0 / 357830.0, -72051.0 / 178915.0},
-                                      {-14852.0 /  17905.0,   63121.0 /  35810.0,    423.0 /  17905.0},
-                                      { 11844.0 / 330415.0,  -50337.0 / 660830.0, 316169.0 / 330415.0}};
+/// Premultiplied LMS – XYZ D65 – Linear P3 conversion matrix for faster processing
+constant float3x3 lms_to_linear_p3 = {
+    { 3.127768971361873753, -2.257135762591638368,  0.129366791229765164},
+    {-1.091009018437797782,  2.413331710306922162, -0.322322691869124789},
+    {-0.026010801938570483, -0.508041331704166866,  1.53405213364273723 }};
 
 inline float3 oklch_to_oklab(float3 oklch) {
     const float rad_h = oklch.z * M_PI_F / 180.0;
     return float3(oklch.x, oklch.y * cos(rad_h), oklch.y * sin(rad_h));
 }
 
-inline float3 oklab_to_xyz(float3 oklab) {
-    const float3 lms = oklab * oklab_to_lms;
-    const float3 lms3 = float3(pow(lms.x, 3), pow(lms.y, 3), pow(lms.z, 3));
-    return lms3 * lms3_to_xyz;
+inline float3 oklab_to_linear_p3(float3 oklab) {
+    const float3 lms_cbrt = oklab * oklab_to_lms_cbrt;
+    const float3 lms = float3(pow(lms_cbrt.x, 3), pow(lms_cbrt.y, 3), pow(lms_cbrt.z, 3));
+    return lms * lms_to_linear_p3;
 }
 
 inline float gamma_correct(float c) {
@@ -39,7 +38,6 @@ inline float gamma_correct(float c) {
     return (c >= 0) ? v : -v;
 }
 
-inline float3 xyz_to_p3(float3 xyz) {
-    const float3 linear_p3 = xyz * xyz_to_linear_p3;
+inline float3 linear_p3_to_display_p3(float3 linear_p3) {
     return float3(gamma_correct(linear_p3.x), gamma_correct(linear_p3.y), gamma_correct(linear_p3.z));
 }

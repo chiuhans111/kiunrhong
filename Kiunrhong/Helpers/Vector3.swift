@@ -25,6 +25,15 @@ func * <T: Vector3>(_ lhs: T, _ rhs: Matrix3x3) -> T {
                  vec.0 * m.2.0 + vec.1 * m.2.1 + vec.2 * m.2.2)
 }
 
+/// Multiply a vector by a matrix.
+func * <T1: Vector3, T2: Vector3>(_ lhs: T1, _ rhs: Matrix3x3) -> T2 {
+    let vec = lhs.values
+    let m = rhs.values
+    return .init(vec.0 * m.0.0 + vec.1 * m.0.1 + vec.2 * m.0.2,
+                 vec.0 * m.1.0 + vec.1 * m.1.1 + vec.2 * m.1.2,
+                 vec.0 * m.2.0 + vec.1 * m.2.1 + vec.2 * m.2.2)
+}
+
 /// Multiply a vector by a scalar.
 func * <T: Vector3>(_ lhs: T, _ rhs: Double) -> T {
     let vec = lhs.values

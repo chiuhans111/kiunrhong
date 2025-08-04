@@ -29,15 +29,19 @@ struct OKLabColor: Vector3 {
     /// Minimum effective chroma.
     static let chromaEpsilon: Double = 0.000004
 
+    //
+    // Main conversion functions
+    //
+
     static let oklabToLMS3 = Matrix3x3(
-        (1.0,  0.3963377773761749,   0.21580375730991364),
-        (1.0, -0.10556134581565857, -0.0638541728258133 ),
-        (1.0, -0.08948417752981186, -1.2914855480194092 ))
+        (1.0,  0.3963377773761749,  0.2158037573099136),
+        (1.0, -0.1055613458156586, -0.0638541728258133),
+        (1.0, -0.0894841775298119, -1.2914855480194092))
 
     static let lmsToXYZ = Matrix3x3(
-        ( 1.226879875845924,   -0.5578149944602171,   0.2813910456659647),
-        (-0.04057574521480083,  1.112286803280317,   -0.07171105806551635),
-        (-0.07637293667466008, -0.42149333240224324,  1.5869240198367818))
+        ( 1.2268798758459243, -0.5578149944602171,  0.2813910456659647),
+        (-0.0405757452148008,  1.1122868032803170, -0.0717110580655164),
+        (-0.0763729366746601, -0.4214933324022432,  1.5869240198367816))
 
     static let xyzToLMS = Matrix3x3(
         (0.8190224379967030, 0.3619062600528904, -0.1288737815209879),
@@ -45,9 +49,9 @@ struct OKLabColor: Vector3 {
         (0.0481771893596242, 0.2642395317527308,  0.6335478284694309))
 
     static let lms3ToOKLab = Matrix3x3(
-        (0.21045426830931396,   0.7936177747023053, -0.0040720430116192585),
-        (1.9779985324311686,   -2.42859224204858,    0.450593709617411),
-        (0.025904042465547734,  0.7827717124575297, -0.8086757549230774))
+        (0.2104542683093140,  0.7936177747023054, -0.0040720430116193),
+        (1.9779985324311684, -2.4285922420485799,  0.4505937096174110),
+        (0.0259040424655478,  0.7827717124575296, -0.8086757549230774))
 
     /// Convert the OKLab color to an XYZ color.
     func toXYZ() -> XYZColor {
@@ -61,11 +65,39 @@ struct OKLabColor: Vector3 {
         let h = atan2(self.b, self.a) * 180.0 / .pi
         return OKLCHColor(self.l, c, h < 0.0 ? h + 360.0 : h)
     }
+
+    //
+    // Premultiplied conversion functions
+    //
+    // These values are precalculated in `float128` with W3C reference implementation values.
+    // Utilize these functions to cut rendering time.
+
+    static let lmsToLinearP3 = Matrix3x3(
+        ( 3.127768971361873753, -2.257135762591638368,  0.129366791229765164),
+        (-1.091009018437797782,  2.413331710306922162, -0.322322691869124789),
+        (-0.026010801938570483, -0.508041331704166866,  1.53405213364273723 ))
+
+    static let linearP3ToLMS = Matrix3x3(
+        (0.481379852749954441, 0.462118371011318044, 0.056501776238727554),
+        (0.22883194181124476 , 0.653216819383567598, 0.117951238805187788),
+        (0.083945752322993189, 0.22416527097756641 , 0.691888976699440452))
+
+    /// Convert the OKLab color to Display P3 color space, utilizing precalculated matrices.
+    func toDisplayP3() -> RGBColor {
+        (((self * OKLabColor.oklabToLMS3) ** 3) * OKLabColor.lmsToLinearP3 as RGBColor).gammaCorrected()
+    }
 }
 
 extension XYZColor {
     /// Convert the XYZ color to the OKLab color space.
     func toOKLab() -> OKLabColor {
         (self * OKLabColor.xyzToLMS).map(cbrt) * OKLabColor.lms3ToOKLab
+    }
+}
+
+extension RGBColor {
+    /// Convert from Display P3 color space to OKLab color space, utilizing precalculated matrices.
+    func toOKLab() -> OKLabColor {
+        (self.linearized() * OKLabColor.linearP3ToLMS).map(cbrt) * OKLabColor.lms3ToOKLab
     }
 }

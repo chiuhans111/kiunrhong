@@ -76,11 +76,11 @@ struct RGBColor: Vector3 {
 
     /// Convert the color to XYZ color space. The color is assumed to be in the Display P3 color space.
     func toXYZ() -> XYZColor {
-        (self.linearized() * RGBColor.linearP3toXYZ).cast()
+        self.linearized() * RGBColor.linearP3toXYZ
     }
 
     /// Convenience function to convert a Display P3 color to OKLCH color space.
     func toOKLCH() -> OKLCHColor {
-        self.toXYZ().toOKLab().toOKLCH()
+        self.toOKLab().toOKLCH()
     }
 }

@@ -18,11 +18,6 @@ struct XYZColor: Vector3 {
         self.z = z
     }
 
-    static let xyzToLMS = Matrix3x3(
-        (0.8190224379967030, 0.3619062600528904, -0.1288737815209879),
-        (0.0329836539323885, 0.9292868615863434,  0.0361446663506424),
-        (0.0481771893596242, 0.2642395317527308,  0.6335478284694309))
-
     static let xyzToLinearP3 = Matrix3x3(
         (446124.0 / 178915.0, -333277.0 / 357830.0, -72051.0 / 178915.0),
         (-14852.0 /  17905.0,   63121.0 /  35810.0,    423.0 /  17905.0),
@@ -35,11 +30,11 @@ struct XYZColor: Vector3 {
 
     /// Convert the XYZ color to Display P3 color space.
     func toDisplayP3() -> RGBColor {
-        ((self * XYZColor.xyzToLinearP3).cast() as RGBColor).gammaCorrected()
+        ((self * XYZColor.xyzToLinearP3) as RGBColor).gammaCorrected()
     }
 
     /// Convert the XYZ color to ITU-R BT.2020-2 (Rec.2020) color space.
     func toRec2020() -> RGBColor {
-        ((self * XYZColor.xyzToLinearRec2020).cast() as RGBColor).gammaCorrectedInRec2020()
+        ((self * XYZColor.xyzToLinearRec2020) as RGBColor).gammaCorrectedInRec2020()
     }
 }

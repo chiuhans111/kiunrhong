@@ -50,6 +50,6 @@ fragment color_t fragmentShader(vertex_t vert [[stage_in]], constant shader_cont
 
     // Convert the color to Display P3 colorspace and render
     const float3 oklch = float3(l, c, h);
-    const float3 color = xyz_to_p3(oklab_to_xyz(oklch_to_oklab(oklch)));
+    const float3 color = linear_p3_to_display_p3(oklab_to_linear_p3(oklch_to_oklab(oklch)));
     return color_t(color.x, color.y, color.z, 1.0);
 }
