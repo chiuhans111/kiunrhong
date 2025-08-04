@@ -25,7 +25,7 @@ struct OKLCHColor: Vector3 {
         .init(self.l, self.c * cos(self.h * .pi / 180.0), self.c * sin(self.h * .pi / 180.0))
     }
 
-    /// Convenience function to conver the OKLCH color to Display P3 color space.
+    /// Convenience function to convert the OKLCH color to Display P3 color space.
     func toDisplayP3() -> RGBColor {
         self.toOKLab().toDisplayP3()
     }

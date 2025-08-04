@@ -14,12 +14,17 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         super.viewDidLoad()
         this.spectrumView.parentDelegate = self
         this.componentDelegate = self
+
+        // Set up color components
         this.addColorComponent(.lightness, withLabel: "L")
         this.addColorComponent(.chroma, withLabel: "C")
         this.addColorComponent(.hue, withLabel: "H")
         this.addColorComponent(.red, withLabel: "R")
         this.addColorComponent(.green, withLabel: "G")
         this.addColorComponent(.blue, withLabel: "B")
+
+        // Hook up tool buttons
+        this.addToolButton(withSystemSymbolName: "doc.on.doc", title: "Copy Color Value", target: self, action: #selector(copyButtonClicked))
     }
 
     func colorSpectrum(_: ColorSpectrumView, mouseDidMove event: ColorSpectrumViewEvent) {
@@ -85,6 +90,17 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.components[.red]!.doubleValue = rgb.r
         this.components[.green]!.doubleValue = rgb.g
         this.components[.blue]!.doubleValue = rgb.b
+    }
+
+    @objc
+    func copyButtonClicked() {
+        guard let color = self.currentSelection else { return }
+        let nsColor = color.toDisplayP3().toNSColorInDisplayP3()
+        let serializedString = String(format: "oklch(%.4f %.4f %.2f)", color.l, color.c, color.h) as NSString
+
+        let clipboard = NSPasteboard.general
+        clipboard.declareTypes([.color, .string], owner: nil)
+        clipboard.writeObjects([nsColor, serializedString])
     }
 }
 

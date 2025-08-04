@@ -13,9 +13,11 @@ class ColorPickerView : NSView {
     var infoTextField: NSTextField!
     var selectionPin: NSImageView!
     var componentStack: NSStackView!
+    var toolbarStack: NSStackView!
 
     var componentDelegate: NumericFieldDelegate?
     var components: [ColorComponent.Name: NumericField] = [:]
+    var toolButtons: [NSButton] = []
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -56,6 +58,14 @@ class ColorPickerView : NSView {
         componentStack.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor).isActive = true
         componentStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
         componentStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 90).isActive = true
+
+        self.toolbarStack = NSStackView()
+        toolbarStack.orientation = .horizontal
+        toolbarStack.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(toolbarStack)
+
+        toolbarStack.topAnchor.constraint(equalToSystemSpacingBelow: componentStack.bottomAnchor, multiplier: 1).isActive = true
+        toolbarStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
     }
 
     required init(coder: NSCoder) {
@@ -81,5 +91,16 @@ class ColorPickerView : NSView {
 
         components[component.name] = field
         componentStack.addArrangedSubview(field)
+    }
+
+    func addToolButton(withSystemSymbolName symbolName: String, title: String, target: AnyObject?, action: Selector?) {
+        let button = NSButton(image: NSImage(systemSymbolName: symbolName, accessibilityDescription: title)!, target: target, action: action)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.bezelStyle = .circular
+        button.controlSize = .regular
+        button.toolTip = title
+        button.showsBorderOnlyWhileMouseInside = true
+        toolButtons.append(button)
+        toolbarStack.addArrangedSubview(button)
     }
 }
