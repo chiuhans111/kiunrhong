@@ -32,6 +32,7 @@ struct OKLabColor: Vector3 {
     //
     // Main conversion functions
     //
+    // These values were adapted from the W3C reference implementation.
 
     static let oklabToLMS3 = Matrix3x3(
         (1.0,  0.3963377773761749,  0.2158037573099136),
