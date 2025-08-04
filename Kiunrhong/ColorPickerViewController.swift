@@ -24,6 +24,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.addColorComponent(.blue, withLabel: "B")
 
         // Hook up tool buttons
+        this.addToolButton(withSystemSymbolName: "eyedropper", title: "Sample Color from Screen", target: self, action: #selector(sampleColorButtonClicked))
         this.addToolButton(withSystemSymbolName: "dice", title: "Randomize!", target: self, action: #selector(randomizeButtonClicked))
         this.addToolButton(withSystemSymbolName: "doc.on.doc", title: "Copy Color Value", target: self, action: #selector(copyButtonClicked))
     }
@@ -93,8 +94,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.components[.blue]!.doubleValue = rgb.b
     }
 
-    @objc
-    func copyButtonClicked() {
+    @objc func copyButtonClicked() {
         guard let color = self.currentSelection else { return }
         let nsColor = color.toDisplayP3().toNSColorInDisplayP3()
         let serializedString = String(format: "oklch(%.4f %.4f %.2f)", color.l, color.c, color.h) as NSString
@@ -104,8 +104,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         clipboard.writeObjects([nsColor, serializedString])
     }
 
-    @objc
-    func randomizeButtonClicked(_ sender: NSButton) {
+    @objc func randomizeButtonClicked(_ sender: NSButton) {
         let color = OKLCHColor(
             Double.random(in: ColorComponent.lightness.practicalRange),
             Double.random(in: ColorComponent.chroma.practicalRange),
@@ -117,6 +116,15 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         if dieRoll == sender.tag { dieRoll += 1 }
         sender.tag = dieRoll
         sender.image = NSImage(systemSymbolName: dieRoll > 6 ? "dice" : "die.face.\(dieRoll)", accessibilityDescription: sender.accessibilityLabel())
+    }
+
+    @objc func sampleColorButtonClicked() {
+        let sampler = NSColorSampler()
+        sampler.show(selectionHandler: { color in
+            guard let nsColor = color?.usingColorSpace(NSColorSpace.displayP3) else { return }
+            let color = RGBColor(nsColor.redComponent, nsColor.greenComponent, nsColor.blueComponent).toOKLCH()
+            self.setCurrentSelection(color)
+        })
     }
 }
 
