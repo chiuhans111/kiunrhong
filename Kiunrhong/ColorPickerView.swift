@@ -102,4 +102,10 @@ class ColorPickerView : NSView {
         toolButtons.append(button)
         toolbarStack.addArrangedSubview(button)
     }
+
+    //
+    // Overrides
+    //
+
+    override var mouseDownCanMoveWindow: Bool { true }
 }

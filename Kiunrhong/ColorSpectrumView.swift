@@ -24,6 +24,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         let device = MTLCreateSystemDefaultDevice()!
         super.init(frame: frameRect, device: device)
 
+        // Configure layer properties
         self.colorPixelFormat = .rgba16Float
         self.colorspace = CGColorSpace(name: CGColorSpace.displayP3)
         self.layer!.isOpaque = false
@@ -36,7 +37,6 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
         let fragmentFunction = library.makeFunction(name: "fragmentShader")!
 
         // Set up pipeline
-
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.vertexFunction = vertexFunction
         descriptor.fragmentFunction = fragmentFunction
@@ -64,8 +64,18 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     // UI functions
     //
 
+    override var acceptsFirstResponder: Bool { true }
+
+    override func drawFocusRingMask() {
+        let diameter = min(self.bounds.width, self.bounds.height)
+        let circle = NSBezierPath(ovalIn: .init(x: (self.bounds.width - diameter) / 2.0,
+                                                y: (self.bounds.height - diameter) / 2.0,
+                                                width: diameter, height: diameter))
+        NSColor.black.setFill()
+        circle.fill()
+    }
+
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
-        // TODO: Validates if `event` will ever be `nil`
         let coord = pointToPolarCoordinate(from: event!.locationInWindow)
         return coord != nil   // Only responds to the event if it’s within the circle
     }
