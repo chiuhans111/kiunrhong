@@ -87,7 +87,6 @@ class ColorPickerView : NSView {
         field.maxValue = component.maxValue
         field.increment = component.increment
         field.maximumFractionDigits = component.fractionDigits
-        field.numberRangeDidChange()
 
         components[component.name] = field
         componentStack.addArrangedSubview(field)

@@ -13,6 +13,10 @@ class NumericField: NSView, NSTextFieldDelegate {
     var field: NSTextField!
     var stepper: NSStepper!
 
+    //
+    // Properties
+    //
+
     /// Gets or sets the label text of the numeric field.
     var name: String = "" {
         didSet {
@@ -24,18 +28,30 @@ class NumericField: NSView, NSTextFieldDelegate {
     var doubleValue: Double {
         get { _value }
         set {
-            // Do not trigger any events if value is the same (perf optimizationl no need to worry float equity here)
-            guard _value != newValue else { return }
-
-            // clamp values
-            _value = if newValue < minValue { minValue }
-                else if newValue > maxValue { maxValue }
-                else { newValue }
+            _value = newValue
 
             // Update the related controls
             field.doubleValue = _value
             stepper.doubleValue = _value
         }
+    }
+
+    /// The minimum value of the numeric field.
+    var minValue: Double {
+        get { stepper.minValue }
+        set { stepper.minValue = newValue }
+    }
+
+    /// The maximum value of the numeric field.
+    var maxValue: Double {
+        get { stepper.maxValue }
+        set { stepper.maxValue = newValue }
+    }
+
+    /// The increment value of the numeric field.
+    var increment: Double {
+        get { stepper.increment }
+        set { stepper.increment = newValue }
     }
 
     /// Indicates whether the numeric field wraps its value after reaching the boundary.
@@ -44,36 +60,40 @@ class NumericField: NSView, NSTextFieldDelegate {
         set { stepper.valueWraps = newValue }
     }
 
-    /// The internal value of the numeric field. Setting this value will not trigger the `valueDidChange()` method.
-    private var _value: Double = 0.0
-
-    /// The minimum value of the numeric field.
-    /// Call `numberRangeDidChange()` after updating all the related properties.
-    var minValue: Double = 0.0
-
-    /// The maximum value of the numeric field.
-    /// Call `numberRangeDidChange()` after updating all the related properties.
-    var maxValue: Double = 1.0
-
-    /// The increment value of the numeric field.
-    /// Call `numberRangeDidChange()` after updating all the related properties.
-    var increment: Double = 0.01
-
     /// The maximum number of fraction digits to display.
-    /// Call `numberRangeDidChange()` after updating all the related properties.
-    var maximumFractionDigits: Int = 2
+    var maximumFractionDigits: Int = 2 {
+        didSet {
+            // Update field formatter to reflect the digit preference
+            let formatter = NumberFormatter()
+            formatter.allowsFloats = true
+            formatter.maximumFractionDigits = self.maximumFractionDigits
+            formatter.roundingIncrement = NSNumber(floatLiteral: pow(10, Double(-self.maximumFractionDigits)))
+            field.formatter = formatter
+        }
+    }
 
     /// The delegate of the numeric field to handle its events.
     var delegate: NumericFieldDelegate?
-
-    /// The internal tag value of the numeric field. Use the `tag` property instead.
-    private var _tag: Int = -1
 
     /// The tag of the numeric field to identify itself.
     override var tag: Int {
         get { _tag }
         set { _tag = newValue }
     }
+
+    //
+    // Private properties
+    //
+
+    /// The internal tag value of the numeric field. Use the `tag` property instead.
+    private var _tag: Int = -1
+
+    /// The internal value of the numeric field. Use `doubleValue` property instead as setting this value will not trigger `didSet` side effects.
+    private var _value: Double = 0.0
+
+    //
+    // Initializers
+    //
 
     /// Creates a new numeric field.
     override init(frame frameRect: NSRect) {
@@ -103,8 +123,6 @@ class NumericField: NSView, NSTextFieldDelegate {
         stepper.topAnchor.constraint(equalTo: field.topAnchor).isActive = true
         stepper.bottomAnchor.constraint(equalTo: field.bottomAnchor).isActive = true
 
-        numberRangeDidChange() // Sets the initial number range and formatters
-
         field.alignment = .right
         field.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize(for: field.controlSize), weight: .regular)
         field.delegate = self
@@ -122,25 +140,20 @@ class NumericField: NSView, NSTextFieldDelegate {
     // Functions
     //
 
-    /// Update the number range of the stepper and the formatter.
-    func numberRangeDidChange() {
-        stepper.minValue = self.minValue
-        stepper.maxValue = self.maxValue
-        stepper.increment = self.increment
-
-        let formatter = NumberFormatter()
-        formatter.allowsFloats = true
-        formatter.maximumFractionDigits = self.maximumFractionDigits
-        formatter.minimum = NSNumber(floatLiteral: self.minValue)
-        formatter.maximum = NSNumber(floatLiteral: self.maxValue)
-        formatter.roundingIncrement = NSNumber(floatLiteral: pow(10, Double(-self.maximumFractionDigits)))
-        field.formatter = formatter
-    }
-
     /// Update the control value and notify its delegate of user-triggered actions.
     func setValue(_ value: Double) {
         self.doubleValue = value
         self.delegate?.numericFieldValueDidChange(self)
+    }
+
+    ///
+    func parseValue(_ input: String) -> Double? {
+        // Aquire the same formatter we use for validation
+        (field.formatter as! NumberFormatter).number(from: input)?.doubleValue
+    }
+
+    func practiallyEqual(with value: Double) -> Bool {
+        abs(self.doubleValue - value) <= pow(10, Double(-self.maximumFractionDigits))
     }
 
     //
@@ -153,30 +166,33 @@ class NumericField: NSView, NSTextFieldDelegate {
     }
 
     func controlTextDidChange(_ notification: Notification) {
+        // We’re in the middle of editing session; do not attempt to access `stringValue`
         let fieldEditor = notification.userInfo?["NSFieldEditor"] as? NSTextView
-        let string = fieldEditor!.string
+        let input = fieldEditor!.string
 
-        // We need to manually convert the number ourselves to determine its validity
-        let formatter = field.formatter as! NumberFormatter
-        guard let number = formatter.number(from: string) else { return }
-
-        // Updates the value only if it’s valid and it exactly matches itself
-        let value = number.doubleValue
-        if (minValue...maxValue).contains(value) && formatter.string(from: number) == string {
+        // If the input parses as a float, falls within the range, and significantly different,
+        // we abort the editing process early and update the color value real-time.
+        // Otherwise, wait for the user to commit the edit.
+        guard let value = parseValue(input) else { return }
+        if (minValue...maxValue).contains(value) && !self.practiallyEqual(with: value) {
             self.setValue(value)
         }
     }
 
     func controlTextDidEndEditing(_: Notification) {
-        self.setValue(field.doubleValue)
+        // Our formatter does not check value range. Clamp the value if necessary.
+        let value = field.doubleValue
+        self.setValue(
+            value < self.minValue ? self.minValue :
+            value > self.maxValue ? self.maxValue : value)
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
         switch commandSelector {
         case #selector(moveUp):
-            self.stepper.moveUp(self)
+            stepper.moveUp(self)
         case #selector(moveDown):
-            self.stepper.moveDown(self)
+            stepper.moveDown(self)
         default:
             return false
         }
