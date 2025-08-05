@@ -7,18 +7,9 @@
 import Cocoa
 
 @main
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
 
-    var window: NSWindow!
-
-    func createApplicationWindow() -> NSWindow {
-        let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 480, height: 360),
-                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
-        let viewController = ColorPickerViewController()
-        window.title = "Kiunrhong"
-        window.contentView = viewController.view
-        return window
-    }
+    var colorPicker: ColorPickerWindowController!
 
     func createApplicationMenu() -> NSMenu {
         let menu = NSMenu(title: "Main Menu")
@@ -99,23 +90,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Application lifecyle stuff
     //
 
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        self.window = createApplicationWindow()
-        window.center()
-        window.makeKeyAndOrderFront(nil)
-        window.makeMain()
-        NSApp.activate()
+        self.colorPicker = ColorPickerWindowController()
+        colorPicker.showWindow(self)
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }
 
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        return true
+    }
+
+    static func restoreWindow(withIdentifier identifier: NSUserInterfaceItemIdentifier, state: NSCoder) async throws -> NSWindow {
+        if identifier == NSUserInterfaceItemIdentifier(ColorPickerWindowController.identifier) {
+            if let window = (NSApplication.shared.delegate as? AppDelegate)?.colorPicker.window {
+                return window
+            }
+        }
+        throw NSError(domain: "AppDelegate", code: 0, userInfo: [NSDebugDescriptionErrorKey: "Window identifier not found: \(identifier)"])
+    }
+
     static func main() {
-        let app = NSApplication.shared
         let delegate = AppDelegate()
-        app.delegate = delegate
-        app.mainMenu = delegate.createApplicationMenu()
-        _  = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
+        withExtendedLifetime(delegate, {
+            let app = NSApplication.shared
+            app.delegate = delegate
+            app.mainMenu = delegate.createApplicationMenu()
+            app.run()
+        })
     }
 }
