@@ -173,10 +173,16 @@ class NumericField: NSView, NSTextFieldDelegate {
     func controlTextDidEndEditing(_: Notification) {
         // Our formatter does not check value range. Clamp the value if necessary.
         let input = field.doubleValue
-        let value = if input < self.minValue { self.minValue } else
-                    if input > self.maxValue { self.maxValue } else { input }
-        self.doubleValue = value
-        self.delegate?.numericFieldValueDidChange(self)
+        let value = if input <= self.minValue { self.minValue } else
+                    if input >= self.maxValue {
+                        if self.valueWraps { self.minValue } else { self.maxValue }
+                    } else { input }
+
+        // Only updates value if it significantly differs to avoid conversion jiggling
+        if !self.practiallyEqual(with: value) {
+            self.doubleValue = value
+            self.delegate?.numericFieldValueDidChange(self)
+        }
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
