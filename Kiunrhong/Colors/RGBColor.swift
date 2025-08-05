@@ -84,3 +84,10 @@ struct RGBColor: Vector3 {
         self.toOKLab().toOKLCH()
     }
 }
+
+extension NSColor {
+    func toRGBInDisplayP3() -> RGBColor? {
+        guard let nsColor = self.usingColorSpace(NSColorSpace.displayP3) else { return nil }
+        return .init(nsColor.redComponent, nsColor.greenComponent, nsColor.blueComponent)
+    }
+}
