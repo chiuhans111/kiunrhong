@@ -24,8 +24,17 @@ class NumericField: NSView, NSTextFieldDelegate {
     var doubleValue: Double {
         get { _value }
         set {
-            _value = newValue
-            self.valueDidChange()
+            // Do not trigger any events if value is the same (perf optimizationl no need to worry float equity here)
+            guard _value != newValue else { return }
+
+            // clamp values
+            _value = if newValue < minValue { minValue }
+                else if newValue > maxValue { maxValue }
+                else { newValue }
+
+            // Update the related controls
+            field.doubleValue = _value
+            stepper.doubleValue = _value
         }
     }
 
@@ -101,7 +110,6 @@ class NumericField: NSView, NSTextFieldDelegate {
         field.delegate = self
 
         stepper.valueWraps = false  // Defaults to false
-        stepper.refusesFirstResponder = true
         stepper.target = self
         stepper.action = #selector(onStepperChanged(_:))
     }
@@ -129,10 +137,10 @@ class NumericField: NSView, NSTextFieldDelegate {
         field.formatter = formatter
     }
 
-    /// Updates the value of the text field and its associated stepper.
-    func valueDidChange() {
-        field.doubleValue = _value
-        stepper.doubleValue = _value
+    /// Update the control value and notify its delegate of user-triggered actions.
+    func setValue(_ value: Double) {
+        self.doubleValue = value
+        self.delegate?.numericFieldValueDidChange(self)
     }
 
     //
@@ -141,13 +149,26 @@ class NumericField: NSView, NSTextFieldDelegate {
 
     @objc
     func onStepperChanged(_: NSStepper) {
-        self.doubleValue = stepper.doubleValue
-        self.delegate?.numericFieldValueDidChange(self)
+        self.setValue(stepper.doubleValue)
     }
 
-    func controlTextDidChange(_ obj: Notification) {
-        self.doubleValue = field.doubleValue
-        self.delegate?.numericFieldValueDidChange(self)
+    func controlTextDidChange(_ notification: Notification) {
+        let fieldEditor = notification.userInfo?["NSFieldEditor"] as? NSTextView
+        let string = fieldEditor!.string
+
+        // We need to manually convert the number ourselves to determine its validity
+        let formatter = field.formatter as! NumberFormatter
+        guard let number = formatter.number(from: string) else { return }
+
+        // Updates the value only if it’s valid and it exactly matches itself
+        let value = number.doubleValue
+        if (minValue...maxValue).contains(value) && formatter.string(from: number) == string {
+            self.setValue(value)
+        }
+    }
+
+    func controlTextDidEndEditing(_: Notification) {
+        self.setValue(field.doubleValue)
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
