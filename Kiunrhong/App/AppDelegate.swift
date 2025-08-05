@@ -16,65 +16,61 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
         let menu = NSMenu(title: "Main Menu")
         let appName = NSRunningApplication.current.localizedName ?? "Kiunrhong"
 
-        let appMenu = NSMenu(title: "Application")
+        menu.addItem(withSubmenuTitle: "Application") { appMenu in
+            appMenu.addItem(withTitle: "About \(appName)", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:))) { aboutMenuItem in
+                aboutMenuItem.image = NSImage(systemSymbolName: "loupe", accessibilityDescription: nil)
+            }
+            appMenu.addSeparator()
+            appMenu.addItem(withSubmenuTitle: "Services") { servicesMenu in
+                NSApp.servicesMenu = servicesMenu
+            }
+            appMenu.addSeparator()
+            appMenu.addItem(withTitle: "Hide \(appName)", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+            appMenu.addItem(withTitle: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h") { hideOthersMenuItem in
+                hideOthersMenuItem.keyEquivalentModifierMask = [.command, .option]
+            }
+            appMenu.addItem(withTitle: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
+            appMenu.addSeparator()
+            appMenu.addItem(withTitle: "Quit \(appName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        }
 
-        let aboutMenuItem = NSMenuItem(title: "About \(appName)", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
-        aboutMenuItem.image = NSImage(systemSymbolName: "loupe", accessibilityDescription: nil)
-        appMenu.addItem(aboutMenuItem)
-        appMenu.addSeparator()
+        menu.addItem(withSubmenuTitle: "Edit") { editMenu in
+            editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+            editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+            editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+            editMenu.addItem(withTitle: "Delete", action: #selector(NSText.delete(_:)), keyEquivalent: String(UnicodeScalar(NSBackspaceCharacter)!))
+            editMenu.addSeparator()
+            editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        }.isHidden = true   // Hides the Edit menu but retains the action
 
-        let servicesMenu = NSMenu(title: "Services")
-        appMenu.addItem(withSubmenu: servicesMenu)
-        NSApp.servicesMenu = servicesMenu
-        appMenu.addSeparator()
+        menu.addItem(withSubmenuTitle: "Color") { colorMenu in
+            colorMenu.addItem(withTitle: "Copy Color", action: #selector(ColorPickerViewController.copyCurrentColor(_:)), keyEquivalent: "C")
+            colorMenu.addItem(withTitle: "Paste Color", action: #selector(ColorPickerViewController.pasteColor(_:)), keyEquivalent: "P")
+            colorMenu.addSeparator()
+            colorMenu.addItem(withTitle: "Sample Color", action: #selector(ColorPickerViewController.sampleColor(_:)), keyEquivalent: "")
+            colorMenu.addItem(withTitle: "Randomize", action: #selector(ColorPickerViewController.randomizeColor(_:)), keyEquivalent: "R")
+        }
 
-        appMenu.addItem(withTitle: "Hide \(appName)", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
-        appMenu.addItem(withTitle: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h", modifiers: [.command, .option])
-        appMenu.addItem(withTitle: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
-        appMenu.addSeparator()
-        appMenu.addItem(withTitle: "Quit \(appName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        menu.addItem(withSubmenu: appMenu)
+        menu.addItem(withSubmenuTitle: "View") { viewMenu in
+            viewMenu.addItem(withTitle: "Show in Decimal", action: nil, keyEquivalent: "")
+            viewMenu.addItem(withTitle: "Show in Percentage", action: nil, keyEquivalent: "")
+            viewMenu.addSeparator()
+            viewMenu.addItem(withTitle: "Display Gradient", action: #selector(showGradientWindow), keyEquivalent: "")
+        }
 
-        let editMenuItem = NSMenuItem()
-        let editMenu = NSMenu(title: "Edit")
-        editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        editMenu.addItem(withTitle: "Delete", action: #selector(NSText.delete(_:)), keyEquivalent: String(UnicodeScalar(NSBackspaceCharacter)!))
-        editMenu.addSeparator()
-        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
-        editMenuItem.submenu = editMenu
-        editMenuItem.isHidden = true    // Menu still works when hidden
-        menu.addItem(editMenuItem)
+        menu.addItem(withSubmenuTitle: "Window") { windowMenu in
+            windowMenu.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+            windowMenu.addItem(withTitle: "Zoom", action: #selector(NSWindow.performZoom(_:)), keyEquivalent: "")
+            windowMenu.addSeparator()
+            windowMenu.addItem(withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
+            NSApp.windowsMenu = windowMenu
+        }
 
-        let colorMenu = NSMenu(title: "Color")
-        colorMenu.addItem(withTitle: "Copy Color", action: #selector(ColorPickerViewController.copyCurrentColor(_:)), keyEquivalent: "C")
-        colorMenu.addItem(withTitle: "Paste Color", action: #selector(ColorPickerViewController.pasteColor(_:)), keyEquivalent: "P")
-        colorMenu.addSeparator()
-        colorMenu.addItem(withTitle: "Sample Color", action: #selector(ColorPickerViewController.sampleColor(_:)), keyEquivalent: "")
-        colorMenu.addItem(withTitle: "Randomize", action: #selector(ColorPickerViewController.randomizeColor(_:)), keyEquivalent: "R")
-        menu.addItem(withSubmenu: colorMenu)
-
-        let viewMenu = NSMenu(title: "View")
-        viewMenu.addItem(withTitle: "Show in Decimal", action: nil, keyEquivalent: "")
-        viewMenu.addItem(withTitle: "Show in Percentage", action: nil, keyEquivalent: "")
-        viewMenu.addSeparator()
-        viewMenu.addItem(withTitle: "Display Gradient", action: #selector(showGradientWindow), keyEquivalent: "")
-        menu.addItem(withSubmenu: viewMenu)
-
-        let windowMenu = NSMenu(title: "Window")
-        windowMenu.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
-        windowMenu.addItem(withTitle: "Zoom", action: #selector(NSWindow.performZoom(_:)), keyEquivalent: "")
-        windowMenu.addSeparator()
-        windowMenu.addItem(withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
-        menu.addItem(withSubmenu: windowMenu)
-        NSApp.windowsMenu = windowMenu
-
-        let helpMenu = NSMenu(title: "Help")
-        helpMenu.addItem(withTitle: "Project Website", action: #selector(openProjectWebsite), keyEquivalent: "")
-        helpMenu.addItem(withTitle: "Report an Issue", action: #selector(reportIssue), keyEquivalent: "")
-        menu.addItem(withSubmenu: helpMenu)
-        NSApp.helpMenu = helpMenu
+        menu.addItem(withSubmenuTitle: "Help") { helpMenu in
+            helpMenu.addItem(withTitle: "Project Website", action: #selector(openProjectWebsite), keyEquivalent: "")
+            helpMenu.addItem(withTitle: "Report an Issue", action: #selector(reportIssue), keyEquivalent: "")
+            NSApp.helpMenu = helpMenu
+        }
 
         return menu
     }

@@ -27,6 +27,8 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.addToolButton(withSystemSymbolName: "eyedropper", title: "Sample Color from Screen", target: self, action: #selector(sampleColor(_:)))
         this.addToolButton(withSystemSymbolName: "dice", title: "Randomize!", target: self, action: #selector(randomizeColor(_:)))
         this.addToolButton(withSystemSymbolName: "doc.on.doc", title: "Copy Color Value", target: self, action: #selector(copyCurrentColor(_:)))
+
+        setCurrentSelection(OKLCHColor(1.0, 0.0, 0.0))
     }
 
     func colorSpectrum(_: ColorSpectrumView, mouseDidMove event: ColorSpectrumViewEvent) {

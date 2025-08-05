@@ -37,8 +37,4 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    override func showWindow(_ sender: Any?) {
-        super.showWindow(sender)
-    }
 }
