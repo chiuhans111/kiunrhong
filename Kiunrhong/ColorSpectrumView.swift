@@ -114,7 +114,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
             let color = colorAtCoordinate(coord)
             self.parentDelegate?.colorSpectrum(self, mouseDidMove: .init(coordinate: coord, mouseEvent: event, color: color))
             self.parentDelegate?.colorSpectrum(self, didSelectColor: color)
-        }
+        } else { super.mouseDown(with: event) }
     }
 
     override func mouseDragged(with event: NSEvent) {
@@ -122,7 +122,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
             let color = colorAtCoordinate(coord)
             self.parentDelegate?.colorSpectrum(self, mouseDidMove: .init(coordinate: coord, mouseEvent: event, color: color))
             self.parentDelegate?.colorSpectrum(self, didSelectColor: color)
-        }
+        } else { super.mouseDragged(with: event) }
     }
 
     //
