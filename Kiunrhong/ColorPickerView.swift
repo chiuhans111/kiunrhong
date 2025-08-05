@@ -14,6 +14,7 @@ class ColorPickerView : NSView {
     var selectionPin: NSImageView!
     var componentStack: NSStackView!
     var toolbarStack: NSStackView!
+    var colorWell: NSColorWell!
 
     var componentDelegate: NumericFieldDelegate?
     var components: [ColorComponent.Name: NumericField] = [:]
@@ -49,7 +50,6 @@ class ColorPickerView : NSView {
         selectionPin.symbolConfiguration = .init(pointSize: 20, weight: .light).applying(.init(paletteColors: [.black]))
         selectionPin.isHidden = true
         self.addSubview(selectionPin)
-
         self.componentStack = NSStackView()
         componentStack.orientation = .vertical
         componentStack.translatesAutoresizingMaskIntoConstraints = false
@@ -66,6 +66,16 @@ class ColorPickerView : NSView {
 
         toolbarStack.topAnchor.constraint(equalToSystemSpacingBelow: componentStack.bottomAnchor, multiplier: 1).isActive = true
         toolbarStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+
+        self.colorWell = NSColorWell()
+        colorWell.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(colorWell)
+
+        colorWell.topAnchor.constraint(equalToSystemSpacingBelow: toolbarStack.bottomAnchor, multiplier: 1).isActive = true
+        colorWell.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
+        colorWell.widthAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
+        colorWell.heightAnchor.constraint(greaterThanOrEqualToConstant: 36).isActive = true
+
     }
 
     required init(coder: NSCoder) {

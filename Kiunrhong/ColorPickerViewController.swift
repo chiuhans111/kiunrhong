@@ -28,6 +28,7 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.addToolButton(withSystemSymbolName: "dice", title: "Randomize!", target: self, action: #selector(randomizeColor(_:)))
         this.addToolButton(withSystemSymbolName: "doc.on.doc", title: "Copy Color Value", target: self, action: #selector(copyCurrentColor(_:)))
 
+        this.colorWell.isEnabled = false
         setCurrentSelection(OKLCHColor(1.0, 0.0, 0.0))
     }
 
@@ -89,11 +90,13 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.components[.hue]!.doubleValue = color.h
 
         // Convert the color to other color spaces.
-        // Note that we don’t need to create an actual `CGColor` as plain vector shall suffice.
         let rgb = color.toDisplayP3()
         this.components[.red]!.doubleValue = rgb.r
         this.components[.green]!.doubleValue = rgb.g
         this.components[.blue]!.doubleValue = rgb.b
+
+        // Updates the color well
+        this.colorWell.color = rgb.toNSColorInDisplayP3()
     }
 
     @objc func copyCurrentColor(_ sender: NSObject?) {
