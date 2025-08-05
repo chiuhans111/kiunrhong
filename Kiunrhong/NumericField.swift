@@ -26,13 +26,11 @@ class NumericField: NSView, NSTextFieldDelegate {
 
     /// Gets or sets the value of the numeric field.
     var doubleValue: Double {
-        get { _value }
+        get { stepper.doubleValue }
         set {
-            _value = newValue
-
-            // Update the related controls
-            field.doubleValue = _value
-            stepper.doubleValue = _value
+            // We will use our stepper’s value as the single source of truth.
+            stepper.doubleValue = newValue
+            field.doubleValue = newValue
         }
     }
 
@@ -88,9 +86,6 @@ class NumericField: NSView, NSTextFieldDelegate {
     /// The internal tag value of the numeric field. Use the `tag` property instead.
     private var _tag: Int = -1
 
-    /// The internal value of the numeric field. Use `doubleValue` property instead as setting this value will not trigger `didSet` side effects.
-    private var _value: Double = 0.0
-
     //
     // Initializers
     //
@@ -140,18 +135,13 @@ class NumericField: NSView, NSTextFieldDelegate {
     // Functions
     //
 
-    /// Update the control value and notify its delegate of user-triggered actions.
-    func setValue(_ value: Double) {
-        self.doubleValue = value
-        self.delegate?.numericFieldValueDidChange(self)
-    }
-
-    ///
+    /// Parse the input string with the numeric field’s current formatter.
     func parseValue(_ input: String) -> Double? {
         // Aquire the same formatter we use for validation
         (field.formatter as! NumberFormatter).number(from: input)?.doubleValue
     }
 
+    /// Determines if the difference between the current value of the numeric field and the provided value is lesser or equal than 0.1 ^ `maximumFractionDigits`.
     func practiallyEqual(with value: Double) -> Bool {
         abs(self.doubleValue - value) <= pow(10, Double(-self.maximumFractionDigits))
     }
@@ -160,9 +150,9 @@ class NumericField: NSView, NSTextFieldDelegate {
     // Actions and delegate functions
     //
 
-    @objc
-    func onStepperChanged(_: NSStepper) {
-        self.setValue(stepper.doubleValue)
+    @objc func onStepperChanged(_: NSStepper) {
+        self.doubleValue = stepper.doubleValue
+        self.delegate?.numericFieldValueDidChange(self)
     }
 
     func controlTextDidChange(_ notification: Notification) {
@@ -175,16 +165,18 @@ class NumericField: NSView, NSTextFieldDelegate {
         // Otherwise, wait for the user to commit the edit.
         guard let value = parseValue(input) else { return }
         if (minValue...maxValue).contains(value) && !self.practiallyEqual(with: value) {
-            self.setValue(value)
+            self.doubleValue = value
+            self.delegate?.numericFieldValueDidChange(self)
         }
     }
 
     func controlTextDidEndEditing(_: Notification) {
         // Our formatter does not check value range. Clamp the value if necessary.
-        let value = field.doubleValue
-        self.setValue(
-            value < self.minValue ? self.minValue :
-            value > self.maxValue ? self.maxValue : value)
+        let input = field.doubleValue
+        let value = if input < self.minValue { self.minValue } else
+                    if input > self.maxValue { self.maxValue } else { input }
+        self.doubleValue = value
+        self.delegate?.numericFieldValueDidChange(self)
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
