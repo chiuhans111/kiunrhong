@@ -19,11 +19,16 @@ struct OKLabColor: Vector3 {
         self.b = b
     }
 
-    /// Relative lightness for the construction of OKLrCH.
-    var relativeLightness: Double {
-        let k3_l = (1 + 0.206) / (1 + 0.03) * self.l
+    /// Convert a lightness value to relative scale (Lr).
+    static func toRelativeLightness(_ l: Double) -> Double {
+        let k3_l = (1 + 0.206) / (1 + 0.03) * l
         let dk = k3_l - 0.206
         return (dk + sqrt(dk * dk + 4 * 0.03 * k3_l)) / 2.0
+    }
+
+    /// Converts a lightness value from relative scale.
+    static func fromRelativeLightness(_ lr: Double) -> Double {
+        lr * (lr + 0.206) / ((1.206 / 1.02) * (lr + 0.03))
     }
 
     /// Minimum effective chroma.

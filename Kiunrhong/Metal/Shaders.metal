@@ -37,14 +37,14 @@ fragment color_t fragmentShader(vertex_t vert [[stage_in]], constant shader_cont
 
     // Calculate the coordinates and distance relative to the center of the view.
     const float2 position = (vert.position.xy - size / 2.0);
-    const float distance = sqrt(pow(position.x, 2) + pow(position.y, 2)) / radius;
+    const float distance = length(position) / radius;
     const float angle = atan2(position.y, position.x);
 
     if (distance > 1.0)
         return color_t(0.0, 0.0, 0.0, 0.0); // Make out-of-circle pixels transparent
 
     // Calculate the OKLCH colors based on the coordinates
-    const float l = 0.6 + (1.0 - 0.6) * (1.0 - distance);
+    const float l = from_relative_l(mix(1.0, 0.5, distance));
     const float c = 0.168 * distance;
     const float h = (180 + (angle / M_PI_F * 180.0));
 

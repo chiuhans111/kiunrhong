@@ -42,7 +42,7 @@ struct RGBColor: Vector3 {
             let abs_i = abs(i)
             if abs_i > 0.0031308 {
                 let val = 1.055 * pow(abs_i, 1.0 / 2.4) - 0.055
-                return i < 0.0 ? -val : val
+                return copysign(val, i)
             } else {
                 return i * 12.92
             }
@@ -54,7 +54,7 @@ struct RGBColor: Vector3 {
             let abs_i = abs(i)
             if abs_i > 0.018053968510807 {
                 let val = 1.09929682680944 * pow(abs_i, 0.45) - 0.09929682680944
-                return i < 0.0 ? -val : val
+                return copysign(val, i)
             } else {
                 return i * 4.5
             }
@@ -67,7 +67,7 @@ struct RGBColor: Vector3 {
             let abs_i = abs(i)
             if abs_i > 0.04045 {
                 let val = pow((abs_i + 0.055) / 1.055, 2.4)
-                return i < 0.0 ? -val : val
+                return copysign(val, i)
             } else {
                 return i / 12.92
             }

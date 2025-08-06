@@ -34,10 +34,21 @@ inline float3 oklab_to_linear_p3(float3 oklab) {
 inline float gamma_correct(float c) {
     const float abs_c = abs(c);
     if (abs_c <= 0.0031308) return c * 12.92;
-    const float v = 1.055 * pow(abs_c, 1.0 / 2.4) - 0.055;
-    return (c >= 0) ? v : -v;
+    const float v = 1.055 * powr(abs_c, 1.0 / 2.4) - 0.055;
+    return copysign(v, c);
 }
 
 inline float3 linear_p3_to_display_p3(float3 linear_p3) {
     return float3(gamma_correct(linear_p3.x), gamma_correct(linear_p3.y), gamma_correct(linear_p3.z));
+}
+
+inline float to_relative_l(float l) {
+    const float k3_l = (1 + 0.206) / (1 + 0.02) * l;
+    const float dk = k3_l - 0.206;
+    return (dk + sqrt(dk * dk + 4 * 0.03 * k3_l)) / 2;
+}
+
+inline float from_relative_l(float lr) {
+    const float k3 = (1 + 0.206) / (1 + 0.02);
+    return lr * (lr + 0.206) / (k3 * (lr + 0.03));
 }

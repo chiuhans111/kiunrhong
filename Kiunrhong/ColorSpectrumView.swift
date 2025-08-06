@@ -15,7 +15,7 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     private var vertexBuffer: MTLBuffer!
     private var fragmentBuffer: MTLBuffer!
 
-    var lightness = 0.6
+    var lightness = 0.5
     var chroma = 0.168
 
     var parentDelegate: (any ColorSpectrumViewDelegate)?
@@ -140,14 +140,14 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
 
     func colorAtCoordinate(_ coordinate: PolarCoordinate) -> OKLCHColor {
         // Estimate plotted color
-        let l = self.lightness + (1.0 - self.lightness) * (1.0 - coordinate.r)
+        let l = OKLabColor.fromRelativeLightness(self.lightness + (1.0 - self.lightness) * (1.0 - coordinate.r))
         let c = self.chroma * coordinate.r
         let h = (180.0 - coordinate.phi).truncatingRemainder(dividingBy: 360.0)
         return OKLCHColor(l, c, h)
     }
 
     func colorToCoordinate(_ color: OKLCHColor) -> PolarCoordinate? {
-        let r = (1.0 - (color.l - self.lightness) / (1.0 - self.lightness))
+        let r = 1.0 - (OKLabColor.toRelativeLightness(color.l) - self.lightness) / (1.0 - self.lightness)
         let t = (180.0 - color.h) / 180.0 * .pi
         return if r <= 1.0 { PolarCoordinate(r, t) } else { nil }
     }
