@@ -41,6 +41,7 @@ class ColorPickerView : NSView {
         self.infoTextField = NSTextField(labelWithString: "")
         infoTextField.translatesAutoresizingMaskIntoConstraints = false
         infoTextField.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.labelFontSize, weight: .regular)
+        infoTextField.alignment = NSApp.userInterfaceLayoutDirection == .leftToRight ? .right : .left
         self.addSubview(infoTextField)
 
         infoTextField.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
@@ -69,6 +70,7 @@ class ColorPickerView : NSView {
 
         self.colorWell = NSColorWell()
         colorWell.translatesAutoresizingMaskIntoConstraints = false
+        colorWell.toolTip = NSLocalizedString("Current Color", comment: "")
         self.addSubview(colorWell)
 
         colorWell.topAnchor.constraint(equalToSystemSpacingBelow: toolbarStack.bottomAnchor, multiplier: 1).isActive = true
@@ -86,10 +88,11 @@ class ColorPickerView : NSView {
     // View functions
     //
 
-    func addColorComponent(_ component: ColorComponent, withLabel label: String) {
+    func addColorComponent(_ component: ColorComponent, named localizedName: String) {
         let field = NumericField(frame: .zero)
         field.tag = component.name.rawValue
-        field.name = label
+        field.labelText = component.denotation
+        field.fieldDescription = localizedName
         field.valueWraps = component.traits.contains(.valueWraps)
         field.delegate = self.componentDelegate
 

@@ -18,9 +18,16 @@ class NumericField: NSView, NSTextFieldDelegate {
     //
 
     /// Gets or sets the label text of the numeric field.
-    var name: String = "" {
+    var labelText: String = "" {
         didSet {
-            label.stringValue = "\(name): "
+            label.stringValue = "\(labelText): "
+        }
+    }
+
+    /// Gets or sets the description of the numeric field.
+    var fieldDescription: String = "" {
+        didSet {
+            label.toolTip = fieldDescription
         }
     }
 
@@ -63,7 +70,9 @@ class NumericField: NSView, NSTextFieldDelegate {
         didSet {
             // Update field formatter to reflect the digit preference
             let formatter = NumberFormatter()
-            formatter.allowsFloats = true
+            let allowsFloats = maximumFractionDigits > 0
+            formatter.allowsFloats = allowsFloats
+            formatter.minimumFractionDigits = allowsFloats ? 1 : 0
             formatter.maximumFractionDigits = self.maximumFractionDigits
             formatter.roundingIncrement = NSNumber(floatLiteral: pow(10, Double(-self.maximumFractionDigits)))
             field.formatter = formatter

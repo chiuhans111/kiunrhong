@@ -16,17 +16,23 @@ class ColorPickerViewController: ViewController<ColorPickerView>, ColorSpectrumV
         this.componentDelegate = self
 
         // Set up color components
-        this.addColorComponent(.lightness, withLabel: "L")
-        this.addColorComponent(.chroma, withLabel: "C")
-        this.addColorComponent(.hue, withLabel: "H")
-        this.addColorComponent(.red, withLabel: "R")
-        this.addColorComponent(.green, withLabel: "G")
-        this.addColorComponent(.blue, withLabel: "B")
+        this.addColorComponent(.lightness, named: NSLocalizedString("Lightness", comment: "component"))
+        this.addColorComponent(.chroma, named: NSLocalizedString("Chroma", comment: "component"))
+        this.addColorComponent(.hue, named: NSLocalizedString("Hue", comment: "component"))
+        this.addColorComponent(.red, named: NSLocalizedString("Red", comment: "component"))
+        this.addColorComponent(.green, named: NSLocalizedString("Green", comment: "component"))
+        this.addColorComponent(.blue, named: NSLocalizedString("Blue", comment: "component"))
 
         // Hook up tool buttons
-        this.addToolButton(withSystemSymbolName: "eyedropper", title: "Sample Color from Screen", target: self, action: #selector(sampleColor(_:)))
-        this.addToolButton(withSystemSymbolName: "dice", title: "Randomize!", target: self, action: #selector(randomizeColor(_:)))
-        this.addToolButton(withSystemSymbolName: "doc.on.doc", title: "Copy Color Value", target: self, action: #selector(copyCurrentColor(_:)))
+        this.addToolButton(withSystemSymbolName: "eyedropper",
+                           title: NSLocalizedString("Sample Color from Screen", comment: ""),
+                           target: self, action: #selector(sampleColor(_:)))
+        this.addToolButton(withSystemSymbolName: "dice",
+                           title: NSLocalizedString("Randomize!", comment: ""),
+                           target: self, action: #selector(randomizeColor(_:)))
+        this.addToolButton(withSystemSymbolName: "doc.on.doc",
+                           title: NSLocalizedString("Copy Color Value", comment: ""),
+                           target: self, action: #selector(copyCurrentColor(_:)))
 
         this.colorWell.isEnabled = false
         setCurrentSelection(OKLCHColor(1.0, 0.0, 0.0))

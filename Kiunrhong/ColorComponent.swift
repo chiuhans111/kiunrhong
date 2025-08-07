@@ -10,6 +10,9 @@ struct ColorComponent {
     /// The name of the color component.
     let name: Name
 
+    /// The human-readable, localized name of the color component.
+    let denotation: String
+
     /// The minimum value of the color component.
     let minValue: Double
 
@@ -34,8 +37,9 @@ struct ColorComponent {
     //
 
     /// Creates a new color component with the given properties.
-    init(name: Name = .none, minValue: Double = 0.0, maxValue: Double = 1.0, increment: Double = 0.01, fractionDigits: Int = 4, practicalRange: ClosedRange<Double>? = nil, traits: Traits = []) {
+    init(name: Name = .none, denotation: String? = nil, minValue: Double = 0.0, maxValue: Double = 1.0, increment: Double = 0.01, fractionDigits: Int = 4, practicalRange: ClosedRange<Double>? = nil, traits: Traits = []) {
         self.name = name
+        self.denotation = denotation ?? String(describing: name).first!.uppercased()
         self.minValue = minValue
         self.maxValue = maxValue
         self.increment = increment
