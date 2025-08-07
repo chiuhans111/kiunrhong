@@ -84,7 +84,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
             viewMenu.addItem(withTitle: NSLocalizedString("Show Colors", comment: ""),
                              action: #selector(showColorPicker),
                              keyEquivalent: "C")
-            viewMenu.addItem(withTitle: NSLocalizedString("Display Gradient", comment: ""),
+            viewMenu.addItem(withTitle: NSLocalizedString("Show Gradient Chart", comment: ""),
                              action: #selector(showGradientWindow),
                              keyEquivalent: "H")
         }
