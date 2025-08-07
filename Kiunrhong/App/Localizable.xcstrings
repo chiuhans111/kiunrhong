@@ -3,7 +3,7 @@
   "strings" : {
     "About %@" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rhìu-gùan %@"
@@ -20,7 +20,7 @@
     "Blue" : {
       "comment" : "component",
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cìang-sed"
@@ -36,7 +36,7 @@
     },
     "Bring All to Front" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cion-pū Biǒng-dǒ Zuǐ-teu-cien"
@@ -53,7 +53,7 @@
     "Chroma" : {
       "comment" : "component",
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sed-tū"
@@ -69,7 +69,7 @@
     },
     "Close" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gùan-bǐ"
@@ -85,7 +85,7 @@
     },
     "Color" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sed-caí"
@@ -101,7 +101,7 @@
     },
     "Copy" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ko-pī"
@@ -117,7 +117,7 @@
     },
     "Copy Color" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fùg-zhǐ Sed-mug"
@@ -133,7 +133,7 @@
     },
     "Copy Color Value" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fùg-zhǐ Sed-mug Sǔ-chìd"
@@ -149,7 +149,7 @@
     },
     "Current Color" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hīen-hā Sed-mug"
@@ -165,7 +165,7 @@
     },
     "Cut" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zíen-hà"
@@ -181,7 +181,7 @@
     },
     "Delete" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sàn-chu"
@@ -197,7 +197,7 @@
     },
     "Edit" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bìen-sìb"
@@ -214,7 +214,7 @@
     "Green" : {
       "comment" : "component",
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lìug-sed"
@@ -230,7 +230,7 @@
     },
     "Help" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pú-cū-shod-min"
@@ -246,7 +246,7 @@
     },
     "Hide %@" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ám-kám %@"
@@ -262,7 +262,7 @@
     },
     "Hide Others" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ám-kám Ki-tà"
@@ -279,7 +279,7 @@
     "Hue" : {
       "comment" : "component",
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sed-sǐong"
@@ -296,7 +296,7 @@
     "Lightness" : {
       "comment" : "component",
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gòng-tū"
@@ -312,7 +312,7 @@
     },
     "Minimize" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sog-dǒ Zuǐ-síau"
@@ -328,7 +328,7 @@
     },
     "Paste" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dab-shòng"
@@ -344,7 +344,7 @@
     },
     "Paste Color" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dab-shòng Sed-mug"
@@ -360,7 +360,7 @@
     },
     "Project Website" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zhòn-ǒn Mióng-zhǎm"
@@ -376,7 +376,7 @@
     },
     "Quit %@" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gied-sug %@"
@@ -392,7 +392,7 @@
     },
     "Randomize" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sui-gì Sán-sèn"
@@ -408,7 +408,7 @@
     },
     "Randomize!" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sui-gì Sán-sèn!"
@@ -425,7 +425,7 @@
     "Red" : {
       "comment" : "component",
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fung-sed"
@@ -441,7 +441,7 @@
     },
     "Report an Issue" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fui-bǒ Mǔn-ti"
@@ -457,7 +457,7 @@
     },
     "Sample Color" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cí-rhōng Sed-mug"
@@ -473,7 +473,7 @@
     },
     "Sample Color from Screen" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ciung Rhin-mug Shōng-píen Cí-rhōng Sed-mug"
@@ -489,7 +489,7 @@
     },
     "Select All" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cion-síen"
@@ -505,7 +505,7 @@
     },
     "Services" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fùg-vǔ"
@@ -521,7 +521,7 @@
     },
     "Show All" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Híen-shǐ Cion-pú"
@@ -537,7 +537,7 @@
     },
     "Show Colors" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Híen-shǐ Sed-caí"
@@ -553,7 +553,7 @@
     },
     "Show Gradient Chart" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Híen-shǐ Cīam-cen-tu-bíau"
@@ -569,7 +569,7 @@
     },
     "Show in Decimal" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rhì Shib-zǐn-vuī Bíau-shī"
@@ -585,7 +585,7 @@
     },
     "Show in Percentage" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rhì Bag-fùn-bí Bíau-shī"
@@ -601,7 +601,7 @@
     },
     "View" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chin-hīen Fòng-shid"
@@ -617,7 +617,7 @@
     },
     "Wide Gamut Gradient Chart" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Góng-sed-ved Cīam-cen-tu-bíau"
@@ -633,7 +633,7 @@
     },
     "Window" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Shī-cùng"
@@ -649,7 +649,7 @@
     },
     "Zoom" : {
       "localizations" : {
-        "hak" : {
+        "hak-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sog-fǒng"
