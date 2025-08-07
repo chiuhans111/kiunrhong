@@ -18,51 +18,61 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
 
         menu.addItem(withSubmenuTitle: "Application") { appMenu in
             appMenu.addItem(withTitle: String(format: NSLocalizedString("About %@", comment: ""), appName),
-                action: #selector(NSApplication.orderFrontStandardAboutPanel(_:))) { aboutMenuItem in
-                aboutMenuItem.image = NSImage(systemSymbolName: "loupe", accessibilityDescription: nil)
-            }
+                            action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)))
+                       { $0.image = NSImage(systemSymbolName: "loupe", accessibilityDescription: nil) }
             appMenu.addSeparator()
             appMenu.addItem(withSubmenuTitle: "Services", localizedTitle: NSLocalizedString("Services", comment: "")) { servicesMenu in
                 NSApp.servicesMenu = servicesMenu
             }
             appMenu.addSeparator()
             appMenu.addItem(withTitle: String(format: NSLocalizedString("Hide %@", comment: ""), appName),
-                action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+                            action: #selector(NSApplication.hide(_:)),
+                            keyEquivalent: "h")
             appMenu.addItem(withTitle: NSLocalizedString("Hide Others", comment: ""),
-                action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h") { hideOthersMenuItem in
-                hideOthersMenuItem.keyEquivalentModifierMask = [.command, .option]
-            }
+                            action: #selector(NSApplication.hideOtherApplications(_:)),
+                            keyEquivalent: "h")
+                       { $0.keyEquivalentModifierMask = [.command, .option] }
             appMenu.addItem(withTitle: NSLocalizedString("Show All", comment: ""),
-                action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
+                            action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
             appMenu.addSeparator()
             appMenu.addItem(withTitle: String(format: NSLocalizedString("Quit %@", comment: ""), appName),
-                action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+                            action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         }
 
         menu.addItem(withSubmenuTitle: "Edit", localizedTitle: NSLocalizedString("Edit", comment: "")) { editMenu in
             editMenu.addItem(withTitle: NSLocalizedString("Cut", comment: ""),
-                action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+                             action: #selector(NSText.cut(_:)),
+                             keyEquivalent: "x")
             editMenu.addItem(withTitle: NSLocalizedString("Copy", comment: ""),
-                action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+                             action: #selector(NSText.copy(_:)),
+                             keyEquivalent: "c")
             editMenu.addItem(withTitle: NSLocalizedString("Paste", comment: ""),
-                action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+                             action: #selector(NSText.paste(_:)),
+                             keyEquivalent: "v")
             editMenu.addItem(withTitle: NSLocalizedString("Delete", comment: ""),
-                action: #selector(NSText.delete(_:)), keyEquivalent: String(UnicodeScalar(NSBackspaceCharacter)!))
+                             action: #selector(NSText.delete(_:)),
+                             keyEquivalent: String(UnicodeScalar(NSBackspaceCharacter)!))
             editMenu.addSeparator()
             editMenu.addItem(withTitle: NSLocalizedString("Select All", comment: ""),
-                action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+                             action: #selector(NSText.selectAll(_:)),
+                             keyEquivalent: "a")
         }.isHidden = true   // Hides the Edit menu but retains the action
 
         menu.addItem(withSubmenuTitle: "Color", localizedTitle: NSLocalizedString("Color", comment: "")) { colorMenu in
             colorMenu.addItem(withTitle: NSLocalizedString("Copy Color", comment: ""),
-                action: #selector(ColorPickerViewController.copyCurrentColor(_:)), keyEquivalent: "C")
+                              action: #selector(ColorPickerViewController.copyCurrentColor(_:)),
+                              keyEquivalent: "c")
+                         { $0.keyEquivalentModifierMask = [.option, .command] }
             colorMenu.addItem(withTitle: NSLocalizedString("Paste Color", comment: ""),
-                action: #selector(ColorPickerViewController.pasteColor(_:)), keyEquivalent: "P")
+                              action: #selector(ColorPickerViewController.pasteColor(_:)),
+                              keyEquivalent: "p")
+                         { $0.keyEquivalentModifierMask = [.option, .command] }
             colorMenu.addSeparator()
             colorMenu.addItem(withTitle: NSLocalizedString("Sample Color", comment: ""),
-                action: #selector(ColorPickerViewController.sampleColor(_:)), keyEquivalent: "")
+                              action: #selector(ColorPickerViewController.sampleColor(_:)), keyEquivalent: "")
             colorMenu.addItem(withTitle: NSLocalizedString("Randomize", comment: ""),
-                action: #selector(ColorPickerViewController.randomizeColor(_:)), keyEquivalent: "R")
+                              action: #selector(ColorPickerViewController.randomizeColor(_:)),
+                              keyEquivalent: "r")
         }
 
         menu.addItem(withSubmenuTitle: "View", localizedTitle: NSLocalizedString("View", comment: "")) { viewMenu in
@@ -71,26 +81,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
             viewMenu.addItem(withTitle: NSLocalizedString("Show in Percentage", comment: ""),
                              action: nil, keyEquivalent: "")
             viewMenu.addSeparator()
+            viewMenu.addItem(withTitle: NSLocalizedString("Show Colors", comment: ""),
+                             action: #selector(showColorPicker),
+                             keyEquivalent: "C")
             viewMenu.addItem(withTitle: NSLocalizedString("Display Gradient", comment: ""),
-                action: #selector(showGradientWindow), keyEquivalent: "")
+                             action: #selector(showGradientWindow),
+                             keyEquivalent: "H")
         }
 
         menu.addItem(withSubmenuTitle: "Window", localizedTitle: NSLocalizedString("Window", comment: "")) { windowMenu in
             windowMenu.addItem(withTitle: NSLocalizedString("Minimize", comment: ""),
-                action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+                               action: #selector(NSWindow.performMiniaturize(_:)),
+                               keyEquivalent: "m")
             windowMenu.addItem(withTitle: NSLocalizedString("Zoom", comment: ""),
-                action: #selector(NSWindow.performZoom(_:)), keyEquivalent: "")
+                               action: #selector(NSWindow.performZoom(_:)), keyEquivalent: "")
             windowMenu.addSeparator()
             windowMenu.addItem(withTitle: NSLocalizedString("Bring All to Front", comment: ""),
-                action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
+                               action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
             NSApp.windowsMenu = windowMenu
         }
 
         menu.addItem(withSubmenuTitle: "Help", localizedTitle: NSLocalizedString("Help", comment: "")) { helpMenu in
             helpMenu.addItem(withTitle: NSLocalizedString("Project Website", comment: ""),
-                action: #selector(openProjectWebsite), keyEquivalent: "")
+                             action: #selector(openProjectWebsite), keyEquivalent: "")
             helpMenu.addItem(withTitle: NSLocalizedString("Report an Issue", comment: ""),
-                action: #selector(reportIssue), keyEquivalent: "")
+                             action: #selector(reportIssue), keyEquivalent: "")
             NSApp.helpMenu = helpMenu
         }
 
@@ -101,6 +116,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
     // Menu stuff
     //
 
+    @objc func showColorPicker() {
+        colorPicker.showWindow(self)
+    }
+
     @objc func showGradientWindow() {
         if gradientWindow == nil {
             let window = NSWindow(
@@ -110,6 +129,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
             window.title = "Gradient"
             window.titlebarAppearsTransparent = true
             window.contentView = ColorGradientView()
+            window.contentView!.translatesAutoresizingMaskIntoConstraints = false
+            window.contentView!.fillParentView()
+            window.center()
             window.setIsZoomed(true)
             self.gradientWindow = window
         }

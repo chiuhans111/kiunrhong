@@ -6,6 +6,7 @@
 
 import AppKit
 
+/// A controller that manages the color picker window.
 class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
 
     static let identifier = "\(Bundle.main.bundleIdentifier!).ColorPickerWindow"
@@ -37,11 +38,24 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
 
         self.viewController = ColorPickerViewController()
         window.contentView = viewController.view
+        viewController.view.fillParentView()
+
         window.delegate = self
         window.restorationClass = AppDelegate.self
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        // Hide the window to background
+        sender.orderOut(self)
+        return false
+    }
+
+    func windowWillClose(_: Notification) {
+        // Release any reference we retain
+        self.viewController = nil
     }
 }
