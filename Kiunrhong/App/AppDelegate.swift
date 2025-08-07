@@ -95,6 +95,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
                                keyEquivalent: "m")
             windowMenu.addItem(withTitle: NSLocalizedString("Zoom", comment: ""),
                                action: #selector(NSWindow.performZoom(_:)), keyEquivalent: "")
+            windowMenu.addItem(withTitle: NSLocalizedString("Close", comment: ""),
+                               action: #selector(NSWindow.performClose(_:)),
+                               keyEquivalent: "w")
             windowMenu.addSeparator()
             windowMenu.addItem(withTitle: NSLocalizedString("Bring All to Front", comment: ""),
                                action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")

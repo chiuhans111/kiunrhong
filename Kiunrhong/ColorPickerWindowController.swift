@@ -19,12 +19,12 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
 
         let window = NSWindow(
             contentRect: .init(origin: position, size: size),
-            styleMask: [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView],
+            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
             backing: .buffered, defer: false)
 
         window.title = "Kiunrhong"
         window.titlebarAppearsTransparent = true
-        window.identifier = .init(rawValue: ColorPickerWindowController.identifier)
+        window.identifier = .init(ColorPickerWindowController.identifier)
         window.restorationClass = AppDelegate.self
 
         super.init(window: window)
