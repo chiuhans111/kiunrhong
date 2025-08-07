@@ -11,8 +11,6 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
 
     static let identifier = "\(Bundle.main.bundleIdentifier!).ColorPickerWindow"
 
-    var viewController: ColorPickerViewController!
-
     init() {
         let screenFrame = NSScreen.main?.visibleFrame ?? .zero
         let size = NSSize(width: 480, height: 360)
@@ -21,27 +19,34 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
 
         let window = NSWindow(
             contentRect: .init(origin: position, size: size),
-            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
+            styleMask: [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView],
             backing: .buffered, defer: false)
 
         window.title = "Kiunrhong"
-        window.identifier = .init(rawValue: ColorPickerWindowController.identifier)
         window.titlebarAppearsTransparent = true
+        window.identifier = .init(rawValue: ColorPickerWindowController.identifier)
+        window.restorationClass = AppDelegate.self
+
+        super.init(window: window)
+        window.delegate = self
+
+        let viewController = ColorPickerViewController()
+        viewController.view.widthAnchor.constraint(equalToConstant: size.width).isActive = true
+        viewController.view.heightAnchor.constraint(equalToConstant: size.height).isActive = true
+        self.contentViewController = viewController
 
         window.standardWindowButton(.zoomButton)?.isHidden = true
         if let windowTitle = window.standardTitleText() {
-            windowTitle.font = .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .medium)
-            windowTitle.sizeToFit()
+            // Opt in to auto layout to avoid weird sizing things
+            windowTitle.translatesAutoresizingMaskIntoConstraints = false
+            windowTitle.centerXAnchor.constraint(equalTo: windowTitle.superview!.centerXAnchor).isActive = true
+            windowTitle.centerYAnchor.constraint(equalTo: windowTitle.superview!.centerYAnchor).isActive = true
+
+            // Sets the title font to our preference
+            windowTitle.font = .monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .medium)
+            windowTitle.stringValue = windowTitle.stringValue.uppercased()
+            windowTitle.alignment = .center
         }
-
-        super.init(window: window)
-
-        self.viewController = ColorPickerViewController()
-        window.contentView = viewController.view
-        viewController.view.fillParentView()
-
-        window.delegate = self
-        window.restorationClass = AppDelegate.self
     }
 
     required init?(coder: NSCoder) {
@@ -56,6 +61,6 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
 
     func windowWillClose(_: Notification) {
         // Release any reference we retain
-        self.viewController = nil
+        self.contentViewController = nil
     }
 }

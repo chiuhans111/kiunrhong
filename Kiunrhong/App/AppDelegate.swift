@@ -9,8 +9,8 @@ import Cocoa
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
 
-    var colorPicker: ColorPickerWindowController!
-    var gradientWindow: NSWindow?
+    var colorPicker = ColorPickerWindowController()
+    var gradientChart = GradientChartWindowController(windowNibName: "")
 
     func createApplicationMenu() -> NSMenu {
         let menu = NSMenu(title: "Main Menu")
@@ -121,21 +121,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
     }
 
     @objc func showGradientWindow() {
-        if gradientWindow == nil {
-            let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
-                styleMask: [.titled, .closable, .miniaturizable, .resizable],
-                backing: .buffered, defer: false)
-            window.title = "Gradient"
-            window.titlebarAppearsTransparent = true
-            window.contentView = ColorGradientView()
-            window.contentView!.translatesAutoresizingMaskIntoConstraints = false
-            window.contentView!.fillParentView()
-            window.center()
-            window.setIsZoomed(true)
-            self.gradientWindow = window
-        }
-        gradientWindow!.makeKeyAndOrderFront(self)
+        gradientChart.showWindow(self)
     }
 
     @objc func openProjectWebsite() {
@@ -152,7 +138,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        self.colorPicker = ColorPickerWindowController()
         colorPicker.showWindow(self)
     }
 
