@@ -26,6 +26,13 @@ class ColorPickerWindowController: NSWindowController, NSWindowDelegate {
         window.title = "Kiunrhong"
         window.identifier = .init(rawValue: ColorPickerWindowController.identifier)
         window.titlebarAppearsTransparent = true
+
+        window.standardWindowButton(.zoomButton)?.isHidden = true
+        if let windowTitle = window.standardTitleText() {
+            windowTitle.font = .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .medium)
+            windowTitle.sizeToFit()
+        }
+
         super.init(window: window)
 
         self.viewController = ColorPickerViewController()
