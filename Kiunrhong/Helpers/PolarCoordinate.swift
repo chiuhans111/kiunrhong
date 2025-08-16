@@ -27,14 +27,14 @@ struct PolarCoordinate {
     }
 
     /// Create a polar coordinate from a specified Cartesian coordinate.
-    init(point: CGPoint, bounds: CGSize) {
+    init(point: CGPoint, bounds: CGSize, clampRadius: Double = 1.0) {
         // Make the coordinates relative to the center of the bounds
         let dx = point.x - bounds.width / 2.0
         let dy = point.y - bounds.height / 2.0
 
         // Calculate relative distance and angle
         let radius = min(bounds.width, bounds.height) / 2.0
-        let r = sqrt(dx * dx + dy * dy) / radius
+        let r = min(clampRadius, sqrt(dx * dx + dy * dy) / radius)
         let t = atan2(dy, dx)
         self.init(r, t)
     }

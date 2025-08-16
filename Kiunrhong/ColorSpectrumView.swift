@@ -132,10 +132,9 @@ class ColorSpectrumView : MTKView, MTKViewDelegate {
     func pointToPolarCoordinate(from locationInWindow: NSPoint) -> PolarCoordinate? {
         // Convert the coordinates to spectrum view’s coordinates
         let localPoint = self.convert(locationInWindow, from: nil)
-        let coordinate = PolarCoordinate(point: localPoint, bounds: self.bounds.size)
+        let coordinate = PolarCoordinate(point: localPoint, bounds: self.bounds.size, clampRadius: 1.0)
 
-        // Only returns the coordinate if the point is within the circle
-        return if coordinate.r <= 1.0 { coordinate } else { nil }
+        return coordinate
     }
 
     func colorAtCoordinate(_ coordinate: PolarCoordinate) -> OKLCHColor {
