@@ -7,6 +7,7 @@
 import Cocoa
 
 @main
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowRestoration {
 
     var colorPicker = ColorPickerWindowController()
