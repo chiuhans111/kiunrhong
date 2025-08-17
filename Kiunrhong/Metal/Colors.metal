@@ -171,7 +171,7 @@ inline float3 okhsv_to_linear_p3(float3 hsv)
     
     float L_v = 1 - s*S_0/(S_0+T - T*k*s);
     float C_v = s*T*S_0/(S_0+T-T*k*s);
-    
+        
 
     float L = v*L_v;
     float C = v*C_v;
@@ -200,6 +200,6 @@ inline float3 okhsv_to_linear_p3(float3 hsv)
     L = L*scale_L;
     C = C*scale_L;
 
-    float3 rgb = oklab_to_linear_p3(float3(1, C*a_, C*b_));
+    float3 rgb = oklab_to_linear_p3(float3(L, C*a_, C*b_));
     return rgb;
 }
