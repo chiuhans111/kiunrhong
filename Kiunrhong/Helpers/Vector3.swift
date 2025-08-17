@@ -16,6 +16,13 @@ protocol Vector3 {
     init(_ a1: Double, _ a2: Double, _ a3: Double)
 }
 
+/// Add two vectors and return a new vector.
+func + <T: Vector3>(_ lhs: T, _ rhs: T) -> T {
+    let a = lhs.values
+    let b = rhs.values
+    return .init(a.0 + b.0, a.1 + b.1, a.2 + b.2)
+}
+
 /// Multiply a vector by a matrix.
 func * <T: Vector3>(_ lhs: T, _ rhs: Matrix3x3) -> T {
     let vec = lhs.values
@@ -34,6 +41,13 @@ func * <T1: Vector3, T2: Vector3>(_ lhs: T1, _ rhs: Matrix3x3) -> T2 {
                  vec.0 * m.2.0 + vec.1 * m.2.1 + vec.2 * m.2.2)
 }
 
+/// Multiply two vectors element-wise.
+func * <T: Vector3>(_ lhs: T, _ rhs: T) -> T {
+    let a = lhs.values
+    let b = rhs.values
+    return .init(a.0 * b.0, a.1 * b.1, a.2 * b.2)
+}
+
 /// Multiply a vector by a scalar.
 func * <T: Vector3>(_ lhs: T, _ rhs: Double) -> T {
     let vec = lhs.values
@@ -46,6 +60,15 @@ infix operator ** : MultiplicationPrecedence
 func ** <T: Vector3>(_ lhs: T, _ rhs: Double) -> T {
     let vec = lhs.values
     return .init(pow(vec.0, rhs), pow(vec.1, rhs), pow(vec.2, rhs))
+}
+
+infix operator .* : MultiplicationPrecedence
+
+/// Return the dot product of two vectors.
+func .* <T: Vector3>(_ lhs: T, _ rhs: T) -> Double {
+    let a = lhs.values
+    let b = rhs.values
+    return a.0 * b.0 + a.1 * b.1 + a.2 * b.2
 }
 
 extension Vector3 {

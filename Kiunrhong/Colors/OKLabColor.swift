@@ -37,6 +37,7 @@ struct OKLabColor: Vector3 {
     //
     // Main conversion functions
     //
+    // These values were adapted from the W3C reference implementation.
 
     static let oklabToLMS3 = Matrix3x3(
         (1.0,  0.3963377773761749,  0.2158037573099136),
@@ -87,9 +88,14 @@ struct OKLabColor: Vector3 {
         (0.2140289579972230, 0.7464571772622752, 0.0460060797636696),
         (0.0518277711726535, 0.3179106254752030, 0.6629479003742361))
 
+    /// Convert the OKLab color to linear Display P3 color space, utilizing precalculated matrices.
+    func toLinearP3() -> RGBColor {
+        ((self * OKLabColor.oklabToLMS3) ** 3) * OKLabColor.lmsToLinearP3
+    }
+
     /// Convert the OKLab color to Display P3 color space, utilizing precalculated matrices.
     func toDisplayP3() -> RGBColor {
-        (((self * OKLabColor.oklabToLMS3) ** 3) * OKLabColor.lmsToLinearP3 as RGBColor).gammaCorrected()
+        toLinearP3().gammaCorrected()
     }
 }
 
