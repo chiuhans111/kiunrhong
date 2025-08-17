@@ -16,9 +16,9 @@ constant float3x3 oklab_to_lms_cbrt = {
 
 /// Premultiplied LMS – XYZ D65 – Linear P3 conversion matrix for faster processing
 constant float3x3 lms_to_linear_p3 = {
-    { 3.127768971361873753, -2.257135762591638368,  0.129366791229765164},
-    {-1.091009018437797782,  2.413331710306922162, -0.322322691869124789},
-    {-0.026010801938570483, -0.508041331704166866,  1.53405213364273723 }};
+    {3.1283616399776282, -2.2583188611418157, 0.1304782704783530},
+    {-1.0907196908026295, 2.4143049540498769, -0.3237262553320767},
+    {-0.0260300288121365, -0.5083773063387490, 1.5343162453218291}};
 
 inline float3 oklch_to_oklab(float3 oklch) {
     const float rad_h = oklch.z * M_PI_F / 180.0;
@@ -33,8 +33,8 @@ inline float3 oklab_to_linear_p3(float3 oklab) {
 
 inline float gamma_correct(float c) {
     const float abs_c = abs(c);
-    if (abs_c <= 0.0031308) return c * 12.92;
-    const float v = 1.055 * powr(abs_c, 1.0 / 2.4) - 0.055;
+    if (abs_c <= 0.00308) return c * 12.987012987012987;
+    const float v = 1.0548523206751055 * powr(abs_c, 1.0 / 2.4) - 0.05485232067510549;
     return copysign(v, c);
 }
 
