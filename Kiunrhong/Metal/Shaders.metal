@@ -44,12 +44,18 @@ fragment color_t fragmentShader(vertex_t vert [[stage_in]], constant shader_cont
         return color_t(0.0, 0.0, 0.0, 0.0); // Make out-of-circle pixels transparent
 
     // Calculate the OKLCH colors based on the coordinates
-    const float l = from_relative_l(mix(1.0, 0.5, distance));
-    const float c = 0.168 * distance;
+//    const float l = from_relative_l(mix(1.0, 0.5, distance));
+//    const float c = 0.168 * distance;
     const float h = (180 + (angle / M_PI_F * 180.0));
 
+    // hsv
+    const float s = distance;
+    const float v = 1.0;
+    const float3 okhsv = float3(h, s, v);
+
     // Convert the color to Display P3 colorspace and render
-    const float3 oklch = float3(l, c, h);
-    const float3 color = linear_p3_to_display_p3(oklab_to_linear_p3(oklch_to_oklab(oklch)));
+//    const float3 oklch = float3(l, c, h);
+//    const float3 color = linear_p3_to_display_p3(oklab_to_linear_p3(oklch_to_oklab(oklch)));
+    const float3 color = linear_p3_to_display_p3(okhsv_to_linear_p3(okhsv));
     return color_t(color.x, color.y, color.z, 1.0);
 }
